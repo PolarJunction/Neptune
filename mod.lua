@@ -17,13 +17,15 @@ function register()
 
   frm_fishing_spot = 0 -- Animate fishing spot - frame counter
 
-  ROD_CAST = 0 -- 0 not cast, 1 in progress, 2 cast
+  ROD_CAST = 0 -- 0 not cast, 1 in progress, 2 cast, 3 reeling in
 
   click_pos_x = 0 -- pos to track where a player clicked to cast
   click_pos_y = 0
 
   lure_pos_x = 0; -- pos to track lure while casting is in progress
   lure_pos_y = 0;
+  lure_bob = 0
+  lure_bob_reverse = false
 
   INIT = false
 
@@ -142,28 +144,36 @@ function register()
       api_create_object("Neptune_fishing_spot", px, py);
 
     end
+
+    if (key_code == 70) then
+        -- Check if we have a fishing rod equipped
+        if (api_get_equipped() == "Neptune_fishing_rod") then
+            v_cast_rod();
+        end
+    end
   end
 
   function click()
-    api_log("Click", "Received")
-    -- Check if we have a fishing rod equipped
-    if (api_get_equipped() == "Neptune_fishing_rod") then
-        if (ROD_CAST == 0) then
-            -- cast away
-            mouse = api_get_mouse_position();
+    -- do something
+  end
 
-            click_pos_x = mouse["x"];
-            click_pos_y = mouse["y"];
+  function v_cast_rod()
+    if (ROD_CAST == 0) then
+        -- cast away
+        mouse = api_get_mouse_position();
 
-            -- set the lure pos to the player
-            player_pos = api_get_player_position();
-            lure_pos_x = player_pos["x"] + 16;
-            lure_pos_y = player_pos["y"] + 2;
+        click_pos_x = mouse["x"];
+        click_pos_y = mouse["y"];
 
-            ROD_CAST = 1;
-        else
-            ROD_CAST = 0;
-        end
+        -- set the lure pos to the player
+        player_pos = api_get_player_position();
+        lure_pos_x = player_pos["x"] + 16;
+        lure_pos_y = player_pos["y"] + 2;
+
+        ROD_CAST = 1;
+    else
+        -- already casted, reel in
+        v_reel_in_lure();
     end
   end
 
@@ -219,7 +229,7 @@ function register()
       rod_top_y = rod_y;
 
       -- Update lure pos if we are casting
-      if (ROD_CAST == 1) then
+      if (ROD_CAST == 1 or ROD_CAST == 3) then
           update_fishing_lure_pos();
       end
       
@@ -248,20 +258,13 @@ function register()
     i_delta_x = rod_x - lure_x;
     i_delta_y = rod_y - lure_y;
 
-
-    api_create_log("deltaX:", tostring(i_delta_x))
-    api_create_log("total-sq:", tostring(i_delta_y))
-
     dXsq = i_delta_x * i_delta_x;
     dYsq = i_delta_y * i_delta_y;
 
     dTsq = dXsq + dYsq;
 
-    api_create_log("total-sq:", tostring(dTsq))
     i_dist = math.ceil(math.sqrt(dTsq));
     
-    api_create_log("dist:", tostring(i_dist))
-
     if (ROD_CAST == 1) then
       if (i_dist >= max_dist) then
        -- if we are in the middle of casting and reached the limit, halt the lure where it is
@@ -269,39 +272,82 @@ function register()
 
        click_pos_x = lure_x;
        click_pos_y = lure_y;
+       
+       v_handle_lure_landing();
+
       end
 
     elseif (ROD_CAST == 2) then
         if (i_dist >= (max_dist + 10)) then
-            ROD_CAST = 0
+            v_reel_in_lure();
         end
     end
+  end
 
-    
 
-    -- if we are currently casting and move too far away, cancel casting
+  function v_reel_in_lure()
+    ROD_CAST = 3;
+
+    player_pos = api_get_player_position();
+
+    -- Reel in, set the position back to the rod
+    click_pos_x = (player_pos["x"] + 16);
+    click_pos_y = (player_pos["y"]);
+  end
+
+  -- Draw the lure landing on a given tile
+  function v_handle_lure_landing()
+   
+    -- Get the tile type under the lure
+    lure_tile = api_get_ground(lure_pos_x, lure_pos_y);
+
+    if (string.match(lure_tile, "water")) then
+        -- shallow water splash
+        api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 40, "FISHING_LINE_COLOR");
+
+    elseif (string.match(lure_tile, "deep")) then
+        -- deep water splash
+        api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 40, "FISHING_LINE_COLOR");
+
+    else
+        -- ground dust splash
+        api_create_effect(lure_pos_x, lure_pos_y, "SMOKE_PUFF", 10, "FONT_BROWN");
+
+        -- landed on ground, reel back in
+        v_reel_in_lure();
+    end
+
+ -- Draw the splash effect
+
+    api_create_log("tile:", lure_tile);
   end
 
   -- Animate the fishing lure when we are casting our line out
   function update_fishing_lure_pos()
-    -- If we are in the middle of casting, work out the next position
+    -- If we are in the middle of casting or reeling, work out the next position
     -- USE STEP when available
-    if (ROD_CAST == 1) then
-        -- casting
-        deltaX = lure_pos_x - click_pos_x;
-        deltaY = lure_pos_y - click_pos_y;
+    deltaX = lure_pos_x - click_pos_x;
+    deltaY = lure_pos_y - click_pos_y;
 
-        if (math.abs(deltaX) <= 10) and (math.abs(deltaY) <= 10) then
+    if (math.abs(deltaX) <= 10) and (math.abs(deltaY) <= 10) then
+        if (ROD_CAST == 1) then
+            -- landed
             ROD_CAST = 2;
+
+            -- set the lure position to exactly where the player clicked
             lure_pos_x = click_pos_x;
             lure_pos_y = click_pos_y;
-        else
-            angle = math.atan(deltaY, deltaX);
-            speed_x = 3 -- rod cast speed
-            speed_y = 2
 
-            lure_pos_x = math.ceil(lure_pos_x - (speed_x * math.cos(angle)))
-            lure_pos_y = math.ceil(lure_pos_y - (speed_y * math.sin(angle)))
+            v_handle_lure_landing();   
+        elseif (ROD_CAST == 3) then
+            ROD_CAST = 0;
         end
+    else
+        angle = math.atan(deltaY, deltaX);
+        speed_x = 3 -- rod cast speed
+        speed_y = 2
+
+        lure_pos_x = math.ceil(lure_pos_x - (speed_x * math.cos(angle)))
+        lure_pos_y = math.ceil(lure_pos_y - (speed_y * math.sin(angle)))
     end
 end
