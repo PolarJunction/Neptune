@@ -121,6 +121,7 @@ function register()
     -- If we have fishing rod equiped, draw it
     if (b_is_equipped("Neptune_fishing_rod")) then
       draw_active_fishing_rod();
+
     elseif (ROD_CAST == 2) then
       -- Clear any cast we had, fishing rod is no longer equipped
       ROD_CAST = 0
@@ -221,8 +222,11 @@ function register()
       if (ROD_CAST == 1) then
           update_fishing_lure_pos();
       end
+      
+      if (ROD_CAST ~= 0) then
+        v_check_fishing_line_length(player_pos["x"] + 16, player_pos["y"], lure_pos_x, lure_pos_y, 100);
+      end
 
-      check_fishing_line_length(rod_top_x, rod_top_y, lure_pos_x, lure_pos_y, 300);
 
       fish_x = lure_pos_x - camera_pos["x"];
       fish_y = lure_pos_y - camera_pos["y"];
@@ -238,18 +242,25 @@ function register()
   end
 
   -- If the fishing line goes beyond a certain limit cancel the cast
-  function check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
+  function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
 
     -- Calculate the distance
     i_delta_x = rod_x - lure_x;
     i_delta_y = rod_y - lure_y;
+
+
+    api_create_log("deltaX:", tostring(i_delta_x))
+    api_create_log("total-sq:", tostring(i_delta_y))
 
     dXsq = i_delta_x * i_delta_x;
     dYsq = i_delta_y * i_delta_y;
 
     dTsq = dXsq + dYsq;
 
+    api_create_log("total-sq:", tostring(dTsq))
     i_dist = math.ceil(math.sqrt(dTsq));
+    
+    api_create_log("dist:", tostring(i_dist))
 
     if (ROD_CAST == 1) then
       if (i_dist >= max_dist) then
@@ -261,7 +272,7 @@ function register()
       end
 
     elseif (ROD_CAST == 2) then
-        if (i_dist >= (max_dist + 2)) then
+        if (i_dist >= (max_dist + 10)) then
             ROD_CAST = 0
         end
     end
