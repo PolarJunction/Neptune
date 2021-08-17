@@ -24,7 +24,7 @@ click_pos_y = 0;
 lure_pos_x = 0; -- pos to track lure while casting is in progress
 lure_pos_y = 0;
 lure_bob = 0;
-lure_bob_reverse = false;
+lure_nearby_fishing_spots = 0;
 
 INIT = false; -- workaround for draw() being called before init()
 
@@ -98,12 +98,9 @@ function init()
     api_define_color("FISHING_LINE_COLOR", {r = 195, g = 210, b = 218});
 
     -- Add our sprites
-    spr_fishing_spot = api_define_sprite("spot", "sprites/fishing-spot.png", 6)
-    spr_fishing_rod = api_define_sprite("rod", "sprites/fishing-rod-active.png",
-                                        2)
-    spr_fishing_lure = api_define_sprite("lure", "sprites/fishing-lure.png", 4)
-
-    INIT = true
+    spr_fishing_spot = api_define_sprite("spot", "sprites/fishing-spot.png", 6);
+    spr_fishing_rod = api_define_sprite("rod", "sprites/fishing-rod-active.png", 2);
+    spr_fishing_lure = api_define_sprite("lure", "sprites/fishing-lure.png", 4);
 
     return "Success"
 end --init()
@@ -116,7 +113,16 @@ end --init()
     Returns: N/A
 --]]
 function clock()
-    -- do something
+
+    -- If the lure has been casted
+    if (ROD_CAST == CASTED) then
+        lure_nearby_fishing_spots = i_find_nearby_fishing_spots(16); -- might want to reduce how often this is called
+        
+        if (lure_nearby_fishing_spots > 0) then
+           v_check_for_fish();
+        end
+    end
+
 end --clock()
 
 
@@ -142,8 +148,6 @@ end --tick()
   Returns: N/A
 --]]
 function draw()
-    -- Don't draw anything until we have initialised the sprites
-    if (INIT == false) then return end
 
     v_draw_animated_fishing_spots();
 
@@ -339,6 +343,81 @@ function v_draw_active_fishing_rod()
     end
 end --v_draw_active_fishing_rod()
 
+--[[
+    Name: v_check_for_fish()
+    Desc: Check if we caught a fish
+    Params: N/A
+    Returns: N/A 
+--]]
+function v_check_for_fish()
+    -- Check if we are casted
+    -- Check if the lure is within x range of a fishing spot
+    i_num = api_random(100);
+
+    -- 5% chance of successfully fishing
+    if (i_num < 5) then
+        -- successful
+        v_spawn_random_fish();
+    
+        v_reel_in_lure();
+    end
+end --v_check_for_fish()
+
+
+function v_spawn_random_fish()
+    api_give_item("Neptune_fish", 1);
+end
+
+-- If we are in range, create an "caught fish" event
+-- If the player reels in within x ms of the event, spawn a random fish/item
+
+--[[
+    Name: i_find_nearby_fishing_spots()
+    Desc: Count how many fishing spots are within range of the lure
+    Params: Radius to count fishing spots
+    Returns: Count of how many fishing spots are within x range
+--]]
+function i_find_nearby_fishing_spots(radius)
+    objs = api_get_objects(); -- Get onscreen objects
+    near_fishing_spots = 0;
+
+    -- Count how many fishing spots are within x radius
+    for i=1,(#objs) do
+        if objs[i]["oid"] == "Neptune_fishing_spot" then
+            -- check if position is close
+            i_dist = i_get_distance(lure_pos_x, lure_pos_y, (objs[i]["x"] + 8), (objs[i]["y"] + 8));
+
+            if (i_dist < radius) then
+                near_fishing_spots = near_fishing_spots + 1;
+            end
+        end
+    end
+    
+    return near_fishing_spots;
+end --i_find_nearby_fishing_spots()
+
+
+--[[
+    Name: i_get_distance()
+    Desc: Get the linear distance between two coordinates
+    Params: First and second position, x+y coords
+    Returns: The calculated distance, rounded up to nearest int
+--]]
+function i_get_distance(posA_x, posA_y, posB_x, posB_y)
+    -- Get the linear distance between two coordinates
+    i_delta_x = posA_x - posB_x;
+    i_delta_y = posA_y - posB_y;
+
+    dXsq = i_delta_x * i_delta_x;
+    dYsq = i_delta_y * i_delta_y;
+
+    dTsq = dXsq + dYsq;
+
+    i_dist = math.ceil(math.sqrt(dTsq));
+    
+    return i_dist;
+end --i_get_distance()
+
 
 --[[
     Name: v_check_fishing_line_length()
@@ -347,17 +426,8 @@ end --v_draw_active_fishing_rod()
     Returns: N/A
 --]]
 function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
-
     -- Calculate the distance D2 = X2 + Y2
-    i_delta_x = rod_x - lure_x;
-    i_delta_y = rod_y - lure_y;
-
-    dXsq = i_delta_x * i_delta_x;
-    dYsq = i_delta_y * i_delta_y;
-
-    dTsq = dXsq + dYsq;
-
-    i_dist = math.ceil(math.sqrt(dTsq));
+    i_dist = i_get_distance(rod_x, rod_y, lure_x, lure_y);
 
     if (ROD_CAST == CASTING) then
         if (i_dist >= max_dist) then
@@ -368,7 +438,6 @@ function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
             click_pos_y = lure_y;
 
             v_handle_lure_landing();
-
         end
 
     elseif (ROD_CAST == CASTED) then
