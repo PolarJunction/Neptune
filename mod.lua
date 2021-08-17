@@ -131,6 +131,7 @@ function tick()
     TICK_NUM = TICK_NUM + 1;
 
     frm_fishing_spot = i_counter(frm_fishing_spot, 0, 5, 5);
+    lure_bob = i_counter(lure_bob, 0, 2, 10);
 end --tick()
 
 
@@ -174,7 +175,7 @@ function key(key_code)
         px = player_pos["x"] + 40
         py = player_pos["y"] + 40
 
-        api_create_object("Neptune_fishing_spot", px, py);
+        api_create_obj("Neptune_fishing_spot", px, py);
 
     end
 
@@ -318,14 +319,16 @@ function v_draw_active_fishing_rod()
             v_update_fishing_lure_pos();
         end
 
+        -- If the line is out, check it doesn't get longer than the rod limit
         if (ROD_CAST ~= READY) then
             v_check_fishing_line_length(player_pos["x"] + 16, player_pos["y"],
                                         lure_pos_x, lure_pos_y, 100);
         end
 
+        -- Animate the lure position slightly in Y direction to create a bob effect
         fish_x = lure_pos_x - camera_pos["x"];
-        fish_y = lure_pos_y - camera_pos["y"];
-
+        fish_y = (lure_pos_y - lure_bob) - camera_pos["y"];
+        
         api_draw_line(rod_top_x, rod_top_y, fish_x, fish_y, "FISHING_LINE_COLOR")
 
         -- Draw lure - need to animate this
@@ -345,7 +348,7 @@ end --v_draw_active_fishing_rod()
 --]]
 function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
 
-    -- Calculate the distance
+    -- Calculate the distance D2 = X2 + Y2
     i_delta_x = rod_x - lure_x;
     i_delta_y = rod_y - lure_y;
 
