@@ -3,26 +3,30 @@
 --]]
 
 -- SPRITES
-spr_fishing_spot = nil
-spr_fishing_rod = nil
-spr_fishing_lure = nil
+spr_fishing_spot = nil;
+spr_fishing_rod = nil;
+spr_fishing_lure = nil;
 
 -- GLOBALS
-TICK_NUM = 0 -- custom tick count
+TICK_NUM = 0; -- custom tick count
 
-frm_fishing_spot = 0 -- Animate fishing spot - frame counter
+frm_fishing_spot = 0; -- Animate fishing spot - frame counter
 
-ROD_CAST = 0 -- 0 not cast, 1 in progress, 2 cast, 3 reeling in
+ROD_CAST = 0; -- Store casting state, READY, CASTING, CASTED, REELING
+READY = 0;
+CASTING = 1;
+CASTED = 2;
+REELING = 3;
 
-click_pos_x = 0 -- pos to track where a player clicked to cast
-click_pos_y = 0
+click_pos_x = 0; -- pos to track where a player clicked to cast
+click_pos_y = 0;
 
 lure_pos_x = 0; -- pos to track lure while casting is in progress
 lure_pos_y = 0;
-lure_bob = 0
-lure_bob_reverse = false
+lure_bob = 0;
+lure_bob_reverse = false;
 
-INIT = false -- workaround for draw() being called before init()
+INIT = false; -- workaround for draw() being called before init()
 
 --[[]
     End of Global Values
@@ -146,9 +150,9 @@ function draw()
     if (b_is_equipped("Neptune_fishing_rod")) then
         v_draw_active_fishing_rod();
 
-    elseif (ROD_CAST == 2) then
+    elseif (ROD_CAST == CASTED) then
         -- Clear any cast we had, fishing rod is no longer equipped
-        ROD_CAST = 0
+        ROD_CAST = READY
     end
 end --draw()
 
@@ -220,7 +224,7 @@ end --i_counter()
   Returns: N/A
 --]]
 function v_cast_rod()
-    if (ROD_CAST == 0) then
+    if (ROD_CAST == READY) then
         -- cast away
         mouse = api_get_mouse_position();
 
@@ -232,7 +236,7 @@ function v_cast_rod()
         lure_pos_x = player_pos["x"] + 16;
         lure_pos_y = player_pos["y"] + 2;
 
-        ROD_CAST = 1;
+        ROD_CAST = CASTING;
     else
         -- already casted, reel in
         v_reel_in_lure();
@@ -298,7 +302,7 @@ function v_draw_active_fishing_rod()
     rod_x = px + 4;
     rod_y = py;
 
-    if (ROD_CAST == 0) then
+    if (ROD_CAST == READY) then
         -- Standard fishing rod
         api_draw_sprite(spr_fishing_rod, 0, rod_x, rod_y);
     else
@@ -310,11 +314,11 @@ function v_draw_active_fishing_rod()
         rod_top_y = rod_y;
 
         -- Update lure pos if we are casting
-        if (ROD_CAST == 1 or ROD_CAST == 3) then
+        if (ROD_CAST == CASTING or ROD_CAST == REELING) then
             v_update_fishing_lure_pos();
         end
 
-        if (ROD_CAST ~= 0) then
+        if (ROD_CAST ~= READY) then
             v_check_fishing_line_length(player_pos["x"] + 16, player_pos["y"],
                                         lure_pos_x, lure_pos_y, 100);
         end
@@ -352,10 +356,10 @@ function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
 
     i_dist = math.ceil(math.sqrt(dTsq));
 
-    if (ROD_CAST == 1) then
+    if (ROD_CAST == CASTING) then
         if (i_dist >= max_dist) then
             -- if we are in the middle of casting and reached the limit, halt the lure where it is
-            ROD_CAST = 2
+            ROD_CAST = CASTED;
 
             click_pos_x = lure_x;
             click_pos_y = lure_y;
@@ -364,7 +368,7 @@ function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
 
         end
 
-    elseif (ROD_CAST == 2) then
+    elseif (ROD_CAST == CASTED) then
         if (i_dist >= (max_dist + 10)) then v_reel_in_lure(); end
     end
 end --v_check_fishing_line_length()
@@ -377,7 +381,7 @@ end --v_check_fishing_line_length()
     Returns: N/A
 --]]
 function v_reel_in_lure()
-    ROD_CAST = 3;
+    ROD_CAST = REELING;
 
     player_pos = api_get_player_position();
 
@@ -430,17 +434,17 @@ function v_update_fishing_lure_pos()
     deltaY = lure_pos_y - click_pos_y;
 
     if (math.abs(deltaX) <= 10) and (math.abs(deltaY) <= 10) then
-        if (ROD_CAST == 1) then
+        if (ROD_CAST == CASTING) then
             -- landed
-            ROD_CAST = 2;
+            ROD_CAST = CASTED;
 
             -- set the lure position to exactly where the player clicked
             lure_pos_x = click_pos_x;
             lure_pos_y = click_pos_y;
 
             v_handle_lure_landing();
-        elseif (ROD_CAST == 3) then
-            ROD_CAST = 0;
+        elseif (ROD_CAST == REELING) then
+            ROD_CAST = READY;
         end
     else
         angle = math.atan(deltaY, deltaX);
