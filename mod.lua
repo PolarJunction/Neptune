@@ -70,16 +70,64 @@ function init()
     }, "sprites/fish.png")
 
     api_define_item({
-        id = "fishing_rod",
-        name = "Fishing Rod",
+        id = "rod0",
+        name = "Wooden Rod",
         category = "Tool",
-        tooltip = "A great tool for catching fish!",
+        tooltip = "Grandad's old fishing rod for catching fish!",
         shop_key = false,
         shop_buy = 1000,
-        shop_sell = 2000,
+        shop_sell = 200,
         durability = 0,
         singular = true
-    }, "sprites/fishing-rod.png")
+    }, "sprites/rod0.png")
+
+    api_define_item({
+        id = "rod1",
+        name = "Lightweight Rod",
+        category = "Tool",
+        tooltip = "Lightweight aluminium fishing rod for catching fish!",
+        shop_key = false,
+        shop_buy = 1000,
+        shop_sell = 200,
+        durability = 0,
+        singular = true
+    }, "sprites/rod1.png")
+
+    api_define_item({
+        id = "rod2",
+        name = "Diamond Rod",
+        category = "Tool",
+        tooltip = "Premium diamond encrusted fishing rod for catching fish!",
+        shop_key = false,
+        shop_buy = 1000,
+        shop_sell = 200,
+        durability = 0,
+        singular = true
+    }, "sprites/rod2.png")
+
+    api_define_item({
+        id = "rod3",
+        name = "Uranium Rod",
+        category = "Tool",
+        tooltip = "Uranium enriched fishing rod for catching fish!",
+        shop_key = false,
+        shop_buy = 1000,
+        shop_sell = 200,
+        durability = 0,
+        singular = true
+    }, "sprites/rod3.png")
+
+    api_define_item({
+        id = "rod4",
+        name = "Rainbow Rod",
+        category = "Tool",
+        tooltip = "Legendary fishing rod for catching fish!",
+        shop_key = false,
+        shop_buy = 1000,
+        shop_sell = 200,
+        durability = 0,
+        singular = true
+    }, "sprites/rod4.png")
 
     -- Add our custom objects
     api_define_object({
