@@ -26,8 +26,6 @@ lure_pos_y = 0;
 lure_bob = 0;
 lure_nearby_fishing_spots = 0;
 
-INIT = false; -- workaround for draw() being called before init()
-
 --[[]
     End of Global Values
 --]]
@@ -164,7 +162,7 @@ function clock()
 
     -- If the lure has been casted
     if (ROD_CAST == CASTED) then
-        lure_nearby_fishing_spots = i_find_nearby_fishing_spots(16); -- might want to reduce how often this is called
+        local lure_nearby_fishing_spots = i_find_nearby_fishing_spots(16); -- might want to reduce how often this is called
         
         if (lure_nearby_fishing_spots > 0) then
            v_check_for_fish();
@@ -200,7 +198,7 @@ function draw()
     v_draw_animated_fishing_spots();
 
     -- If we have fishing rod equiped, draw it
-    if (b_is_equipped("Neptune_fishing_rod")) then
+    if (b_is_equipped("Neptune_rod")) then
         v_draw_active_fishing_rod();
 
     elseif (ROD_CAST == CASTED) then
@@ -218,24 +216,14 @@ end --draw()
 --]]
 function key(key_code)
     if (key_code == 32) then
-        --   api_give_item("Neptune_fish", 1)
-        --   api_give_item("Neptune_fishing_rod", 1)
-
         -- create a fishing spot
-        player_pos = api_get_player_position()
+        local player_pos = api_get_player_position()
 
-        px = player_pos["x"] + 40
-        py = player_pos["y"] + 40
+        local px = player_pos["x"] + 40
+        local py = player_pos["y"] + 40
 
         api_create_obj("Neptune_fishing_spot", px, py);
 
-    end
-
-    if (key_code == 70) then
-        -- Check if we have a fishing rod equipped
-        if (api_get_equipped() == "Neptune_fishing_rod") then
-            v_cast_rod();
-        end
     end
 end --key()
 
@@ -247,7 +235,10 @@ end --key()
   Returns: N/A
 --]]
 function click()
-    -- do something
+    -- Check if we have a fishing rod equipped
+        if (api_get_equipped() == "Neptune_fishing_rod") then
+            v_cast_rod();
+        end
 end --click()
 
 
@@ -279,13 +270,14 @@ end --i_counter()
 function v_cast_rod()
     if (ROD_CAST == READY) then
         -- cast away
-        mouse = api_get_mouse_position();
+        local mouse = api_get_mouse_position();
 
         click_pos_x = mouse["x"];
         click_pos_y = mouse["y"];
 
         -- set the lure pos to the player
-        player_pos = api_get_player_position();
+        local player_pos = api_get_player_position();
+
         lure_pos_x = player_pos["x"] + 16;
         lure_pos_y = player_pos["y"] + 2;
 
@@ -300,14 +292,14 @@ end --v_cast_rod()
 --[[
     Name: b_is_equipped()
     Desc: Check if a given item is currently equipped by the player
-    Params: Item string to check
+    Params: Item string/part string to check
     Returns: true/false equipped or not
 --]]
 function b_is_equipped(item)
     -- Get the currently equipped item
-    equipped_item = api_get_equipped();
+    local equipped_item = api_get_equipped();
 
-    if (equipped_item == item) then
+    if (string.match(equipped_item, item)) then
         return true
     else
         return false
@@ -324,8 +316,8 @@ end --b_is_equipped()
 --]]
 function v_draw_animated_fishing_spots()
     -- get a list of nearby objects in camera view
-    objs = api_get_objects();
-    camera_pos = api_get_cam();
+    local objs = api_get_objects();
+    local camera_pos = api_get_cam();
 
     for i = 1, #objs do
         if (objs[i]["oid"] == "Neptune_fishing_spot") then
@@ -344,16 +336,16 @@ end --v_draw_animated_fishing_spots()
   Returns: N/A
 --]]
 function v_draw_active_fishing_rod()
-    player_pos = api_get_player_position();
-    camera_pos = api_get_camera_position();
+    local player_pos = api_get_player_position();
+    local camera_pos = api_get_camera_position();
 
     -- Player position on screen
-    px = player_pos["x"] - camera_pos["x"];
-    py = player_pos["y"] - camera_pos["y"];
+    local px = player_pos["x"] - camera_pos["x"];
+    local py = player_pos["y"] - camera_pos["y"];
 
     -- Draw active fishing rod sprite
-    rod_x = px + 4;
-    rod_y = py;
+    local rod_x = px + 4;
+    local rod_y = py;
 
     if (ROD_CAST == READY) then
         -- Standard fishing rod
@@ -363,8 +355,8 @@ function v_draw_active_fishing_rod()
         api_draw_sprite(spr_fishing_rod, 1, rod_x, rod_y);
 
         -- Draw fishing line - if casted
-        rod_top_x = rod_x + 12;
-        rod_top_y = rod_y;
+        local rod_top_x = rod_x + 12;
+        local rod_top_y = rod_y;
 
         -- Update lure pos if we are casting
         if (ROD_CAST == CASTING or ROD_CAST == REELING) then
@@ -378,14 +370,14 @@ function v_draw_active_fishing_rod()
         end
 
         -- Animate the lure position slightly in Y direction to create a bob effect
-        fish_x = lure_pos_x - camera_pos["x"];
-        fish_y = (lure_pos_y - lure_bob) - camera_pos["y"];
+        local fish_x = lure_pos_x - camera_pos["x"];
+        local fish_y = (lure_pos_y - lure_bob) - camera_pos["y"];
         
         api_draw_line(rod_top_x, rod_top_y, fish_x, fish_y, "FISHING_LINE_COLOR")
 
         -- Draw lure - need to animate this
-        lure_x = fish_x - 8;
-        lure_y = fish_y - 8;
+        local lure_x = fish_x - 8;
+        local lure_y = fish_y - 8;
 
         api_draw_sprite(spr_fishing_lure, 0, lure_x, lure_y)
     end
@@ -400,7 +392,7 @@ end --v_draw_active_fishing_rod()
 function v_check_for_fish()
     -- Check if we are casted
     -- Check if the lure is within x range of a fishing spot
-    i_num = api_random(100);
+    local i_num = api_random(100);
 
     -- 5% chance of successfully fishing
     if (i_num < 5) then
@@ -426,14 +418,14 @@ end
     Returns: Count of how many fishing spots are within x range
 --]]
 function i_find_nearby_fishing_spots(radius)
-    objs = api_get_objects(); -- Get onscreen objects
-    near_fishing_spots = 0;
+    local objs = api_get_objects(); -- Get onscreen objects
+    local near_fishing_spots = 0;
 
     -- Count how many fishing spots are within x radius
     for i=1,(#objs) do
         if objs[i]["oid"] == "Neptune_fishing_spot" then
             -- check if position is close
-            i_dist = i_get_distance(lure_pos_x, lure_pos_y, (objs[i]["x"] + 8), (objs[i]["y"] + 8));
+            local i_dist = i_get_distance(lure_pos_x, lure_pos_y, (objs[i]["x"] + 8), (objs[i]["y"] + 8));
 
             if (i_dist < radius) then
                 near_fishing_spots = near_fishing_spots + 1;
@@ -452,18 +444,14 @@ end --i_find_nearby_fishing_spots()
     Returns: The calculated distance, rounded up to nearest int
 --]]
 function i_get_distance(posA_x, posA_y, posB_x, posB_y)
-    -- Get the linear distance between two coordinates
-    i_delta_x = posA_x - posB_x;
-    i_delta_y = posA_y - posB_y;
+    -- D2 = X2 + Y2
+    local i_delta_x = posA_x - posB_x;
+    local i_delta_y = posA_y - posB_y;
 
-    dXsq = i_delta_x * i_delta_x;
-    dYsq = i_delta_y * i_delta_y;
+    local dXsq = i_delta_x * i_delta_x;
+    local dYsq = i_delta_y * i_delta_y;
 
-    dTsq = dXsq + dYsq;
-
-    i_dist = math.ceil(math.sqrt(dTsq));
-    
-    return i_dist;
+    return(math.ceil(math.sqrt((dXsq + dYsq))) );
 end --i_get_distance()
 
 
@@ -475,7 +463,7 @@ end --i_get_distance()
 --]]
 function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
     -- Calculate the distance D2 = X2 + Y2
-    i_dist = i_get_distance(rod_x, rod_y, lure_x, lure_y);
+    local i_dist = i_get_distance(rod_x, rod_y, lure_x, lure_y);
 
     if (ROD_CAST == CASTING) then
         if (i_dist >= max_dist) then
@@ -501,9 +489,9 @@ end --v_check_fishing_line_length()
     Returns: N/A
 --]]
 function v_reel_in_lure()
-    ROD_CAST = REELING;
+    local player_pos = api_get_player_position();
 
-    player_pos = api_get_player_position();
+    ROD_CAST = REELING;
 
     -- Reel in, set the position back to the rod
     click_pos_x = (player_pos["x"] + 16);
@@ -519,7 +507,7 @@ end --v_reel_in_lure()
 --]]
 function v_handle_lure_landing()
     -- Get the tile type under the lure
-    lure_tile = api_get_ground(lure_pos_x, lure_pos_y);
+    local lure_tile = api_get_ground(lure_pos_x, lure_pos_y);
 
     if (string.match(lure_tile, "water")) then
         -- shallow water splash
@@ -550,8 +538,8 @@ end --v_handle_lure_landing()
 function v_update_fishing_lure_pos()
     -- If we are in the middle of casting or reeling, work out the next position
     -- USE STEP when available
-    deltaX = lure_pos_x - click_pos_x;
-    deltaY = lure_pos_y - click_pos_y;
+    local deltaX = lure_pos_x - click_pos_x;
+    local deltaY = lure_pos_y - click_pos_y;
 
     if (math.abs(deltaX) <= 10) and (math.abs(deltaY) <= 10) then
         if (ROD_CAST == CASTING) then
@@ -563,15 +551,16 @@ function v_update_fishing_lure_pos()
             lure_pos_y = click_pos_y;
 
             v_handle_lure_landing();
+
         elseif (ROD_CAST == REELING) then
             ROD_CAST = READY;
         end
     else
-        angle = math.atan(deltaY, deltaX);
-        speed_x = 3 -- rod cast speed
-        speed_y = 2
+        local angle = math.atan(deltaY, deltaX);
+        local speed_x = 3; -- rod cast speed
+        local speed_y = 2;
 
-        lure_pos_x = math.ceil(lure_pos_x - (speed_x * math.cos(angle)))
-        lure_pos_y = math.ceil(lure_pos_y - (speed_y * math.sin(angle)))
+        lure_pos_x = math.ceil(lure_pos_x - (speed_x * math.cos(angle)));
+        lure_pos_y = math.ceil(lure_pos_y - (speed_y * math.sin(angle)));
     end
 end --v_update_fishing_lure_pos()
