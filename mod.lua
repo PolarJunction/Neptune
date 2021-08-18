@@ -42,6 +42,88 @@ function register()
     return {name = "Neptune", hooks = {"clock", "key", "draw", "tick", "click"}}
 end --register()
 
+--[[
+    Name: v_define_fish()
+    Desc: Helper function to define fish
+    Params: fish_id, name, tooltip and how much the shop will buy it for
+    Returns: N/A
+--]]
+function v_define_fish(id, name, tooltip, sell)
+    api_define_item({
+        id = id,
+        name = name,
+        category = "Fish",
+        tooltip = tooltip,
+        shop_key = false,
+        shop_buy = 0,
+        shop_sell = sell,
+        singular = false },
+
+        ("sprites/" .. id .. ".png") );
+end
+
+
+--[[
+    Name: v_define_junk()
+    Desc: Helper function to define junk items
+    Params: Junk id, name, tooltip and how much the shop will buy it for
+    Returns: N/A
+--]]
+function v_define_junk(id, name, tooltip, sell)
+    api_define_item({
+        id = id,
+        name = name,
+        category = "Junk",
+        tooltip = tooltip,
+        shop_key = false,
+        shop_buy = 0,
+        shop_sell = sell,
+        singular = false  },
+
+        ("sprites/" .. id .. ".png") );
+end
+
+
+--[[
+    Name: v_define_rod()
+    Desc: Helper function to define fishing rods
+    Params: Rod id, name, tooltip and how much it costs from the shop
+    Returns: N/A
+--]]
+function v_define_rod(id, name, tooltip, buy)
+    api_define_item({
+        id = id,
+        name = name,
+        category = "Fishing Rods",
+        tooltip = tooltip,
+        shop_key = false,
+        shop_buy = buy,
+        shop_sell = (buy / 2),
+        singular = true },
+
+        ("sprites/" .. id .. ".png") );
+end
+
+
+--[[
+    Name: v_define_bait()
+    Desc: Helper function to define bait
+    Params: Bait id, name, tooltip and how much it costs from the shop
+    Returns: N/A
+--]]
+function v_define_bait(id, name, tooltip, buy)
+    api_define_item({
+        id = id,
+        name = name,
+        category = "Fishing Bait",
+        tooltip = tooltip,
+        shop_key = false,
+        shop_buy = buy,
+        shop_sell = (buy / 2),
+        singular = false },
+
+        ("sprites/" .. id .. ".png") );
+end
 
 --[[
     Name: init()
@@ -54,78 +136,43 @@ function init()
     api_create_log("init", "Hello World!")
     api_set_devmode(true);
 
-    -- Add our custom items
-    api_define_item({
-        id = "fish",
-        name = "Fish",
-        category = "Decoration",
-        tooltip = "This is a cool fish!",
-        shop_key = false,
-        shop_buy = 10,
-        shop_sell = 0,
-        durability = 0,
-        singular = false
-    }, "sprites/fish.png")
+    -- Define all of the catch-able fish
+    v_define_fish("fish0",  "Guppy",       "A small and tasty fish.", 10);
+    v_define_fish("fish1",  "Sardine",     "A small and tasty fish.", 10);
+    v_define_fish("fish2",  "Octopus",     "Clever and tricky to catch.", 10);
+    v_define_fish("fish3",  "Sea Snake",   "Wait, this isn't a fish?", 10);
+    v_define_fish("fish4",  "Mackerel",    "A small and tasty fish.", 10);
+    v_define_fish("fish5",  "Crab",        "A fiesty crustacean with snapping claws.", 10);
+    v_define_fish("fish6",  "Prawn",       "A small and tasty shellfish.", 10);
+    v_define_fish("fish7",  "Lobster",     "A classic and well sought after fish.", 10);
+    v_define_fish("fish8",  "Pufferfish",  "A big and exciting fish.", 10);
+    v_define_fish("fish9",  "Glowfish",    "A strange and elusive fish.", 10);
+    v_define_fish("fish10", "Lionfish",    "Poisonous, but nutritious when prepared carefully", 10);
+    v_define_fish("fish11", "Fossil",      "An ancient and rare fossil.", 10);
 
-    api_define_item({
-        id = "rod0",
-        name = "Wooden Rod",
-        category = "Tool",
-        tooltip = "Grandad's old fishing rod for catching fish!",
-        shop_key = false,
-        shop_buy = 1000,
-        shop_sell = 200,
-        durability = 0,
-        singular = true
-    }, "sprites/rod0.png")
+    -- -- Define all of the fishing rods
+    v_define_rod("rod0", "Wooden Rod", "Grandad's old wooden fishing rod", 10);
+    v_define_rod("rod1", "Lightweight Rod", "Modern aluminium fishing rod.", 10);
+    v_define_rod("rod2", "Diamond Rod", "Premium, diamond standard fishing rod.", 10);
+    v_define_rod("rod3", "Uranium Rod", "Uranium enriched fishing rod.", 10);
+    v_define_rod("rod4", "Rainbow Rod", "Nanobii's legendary fishing rod.", 10);
 
-    api_define_item({
-        id = "rod1",
-        name = "Lightweight Rod",
-        category = "Tool",
-        tooltip = "Lightweight aluminium fishing rod for catching fish!",
-        shop_key = false,
-        shop_buy = 1000,
-        shop_sell = 200,
-        durability = 0,
-        singular = true
-    }, "sprites/rod1.png")
+    -- -- Define all of the junk items
+    v_define_junk("junk0", "Seaweed", "Slimy green vegetation.", 10);
+    v_define_junk("junk1", "Broken Rod", "Useless broken fishing rod.", 10);
+    v_define_junk("junk2", "Rusty Sword", "A distant memory of the honey wars.", 10);
+    v_define_junk("junk3", "Slimy Rock", "Shiny clear stone covered in seaweed, worthless.", 10);
+    v_define_junk("junk4", "Old Rubber", "A pile of old rubber.", 10);
+    v_define_junk("junk5", "Golden Key", "Ancient key that vibrates slightly when held, probably doesn't unlock anything useful.", 10);
+    v_define_junk("junk6", "Old Boots", "Grandad's old boots.", 10);
+    v_define_junk("junk7", "Ruined Book", "A ruined copy of Tales to Astonish #70.", 10);
+    v_define_junk("junk8", "Anchor", "Old ship anchor, not as heavy as it should be.", 10);
 
-    api_define_item({
-        id = "rod2",
-        name = "Diamond Rod",
-        category = "Tool",
-        tooltip = "Premium diamond encrusted fishing rod for catching fish!",
-        shop_key = false,
-        shop_buy = 1000,
-        shop_sell = 200,
-        durability = 0,
-        singular = true
-    }, "sprites/rod2.png")
-
-    api_define_item({
-        id = "rod3",
-        name = "Uranium Rod",
-        category = "Tool",
-        tooltip = "Uranium enriched fishing rod for catching fish!",
-        shop_key = false,
-        shop_buy = 1000,
-        shop_sell = 200,
-        durability = 0,
-        singular = true
-    }, "sprites/rod3.png")
-
-    api_define_item({
-        id = "rod4",
-        name = "Rainbow Rod",
-        category = "Tool",
-        tooltip = "Legendary fishing rod for catching fish!",
-        shop_key = false,
-        shop_buy = 1000,
-        shop_sell = 200,
-        durability = 0,
-        singular = true
-    }, "sprites/rod4.png")
+    -- -- Define all of the fishing bait
+    v_define_bait("bait0", "Bread Crumbs", "Small chunks of crusty bread", 10);
+    v_define_bait("bait1", "Small Worms", "Small wriggly worms, ideal for attracting small fish", 10);
+    v_define_bait("bait2", "Large Worms", "Large wriggly worms, ideal for attracting large fish", 10);
+    v_define_bait("bait3", "Exotic Worms", "Exotic wriggly worms, ideal for attracting exotic fish", 10);
 
     -- Add our custom objects
     api_define_object({
@@ -234,11 +281,15 @@ end --key()
   Params: N/A
   Returns: N/A
 --]]
-function click()
-    -- Check if we have a fishing rod equipped
-        if (api_get_equipped() == "Neptune_fishing_rod") then
+function click(button, click_type)
+
+    if (button == "LEFT" and click_type == "PRESSED") then
+     -- Check if we have a fishing rod equipped
+        if (b_is_equipped("Neptune_rod")) then
             v_cast_rod();
-        end
+            api_create_log("click", "registered")
+        end   
+    end
 end --click()
 
 
@@ -338,6 +389,7 @@ end --v_draw_animated_fishing_spots()
 function v_draw_active_fishing_rod()
     local player_pos = api_get_player_position();
     local camera_pos = api_get_camera_position();
+    local player = api_get_player_instance(); -- used to determine the players direction
 
     -- Player position on screen
     local px = player_pos["x"] - camera_pos["x"];
