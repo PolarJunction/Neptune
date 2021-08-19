@@ -14,8 +14,15 @@ function v_cast_rod()
 
         -- set the lure pos to the player
         local player_pos = api_get_player_position();
+        local player_id = api_get_player_instance();
+        local dir = api_get_property(player_id, "dir");
 
-        lure_pos_x = player_pos["x"] + 16;
+        if (dir == "right") then
+            lure_pos_x = player_pos["x"] + 16;
+        else
+            lure_pos_x = player_pos["x"] - 16;
+        end
+
         lure_pos_y = player_pos["y"] + 2;
 
         ROD_STATE = CASTING;
@@ -68,26 +75,40 @@ end --v_draw_animated_fishing_spots()
 function v_draw_active_fishing_rod()
     local player_pos = api_get_player_position();
     local camera_pos = api_get_camera_position();
-    local player = api_get_player_instance(); -- used to determine the players direction
+    local player_id = api_get_player_instance(); -- used to determine the players direction
+    local dir = api_get_property(player_id, "dir");
 
     -- Player position on screen
     local px = player_pos["x"] - camera_pos["x"];
     local py = player_pos["y"] - camera_pos["y"];
 
-    -- Draw active fishing rod sprite
-    local rod_x = px + 4;
-    local rod_y = py;
-
     if (ROD_STATE == READY) then
-        -- Standard fishing rod
-        api_draw_sprite(spr_fishing_rod, 0, rod_x, rod_y);
+        if (dir == "right") then
+            -- Standard fishing rod
+            api_draw_sprite(spr_fishing_rod, 0, (px + 4), py);
+        else
+            -- Flipped fishing rod
+            api_draw_sprite_ext(spr_fishing_rod, 0, (px - 4), py, -1, 1, 0, 1, 1);
+        end
     else
-        -- Casting/casted fishing rod
-        api_draw_sprite(spr_fishing_rod, 1, rod_x, rod_y);
-
+        
         -- Draw fishing line - if casted
-        local rod_top_x = rod_x + 12;
-        local rod_top_y = rod_y;
+        local rod_top_x = px;
+        local rod_top_y = py;
+
+        --- Draw & Adjust line attach point if we are flipped
+        if (dir == "right") then
+            -- Casting/casted fishing rod
+            api_draw_sprite(spr_fishing_rod, 1, (px + 4), py);
+
+            rod_top_x = rod_top_x + 16;
+
+        else
+            -- Casting/casted fishing rod
+            api_draw_sprite_ext(spr_fishing_rod, 1, (px - 4), py, -1, 1, 0, 1, 1);
+
+            rod_top_x = rod_top_x - 20;
+        end
 
         -- Update lure pos if we are casting
         if (ROD_STATE == CASTING or ROD_STATE == REELING) then
@@ -96,7 +117,7 @@ function v_draw_active_fishing_rod()
 
         -- If the line is out, check it doesn't get longer than the rod limit
         if (ROD_STATE ~= READY) then
-            v_check_fishing_line_length(player_pos["x"] + 16, player_pos["y"],
+            v_check_fishing_line_length(rod_top_x + camera_pos["x"], rod_top_y + camera_pos["y"],
                                         lure_pos_x, lure_pos_y, 100);
         end
 
@@ -311,11 +332,17 @@ end --v_check_fishing_line_length()
 --]]
 function v_reel_in_lure()
     local player_pos = api_get_player_position();
+    local player_id = api_get_player_instance();
+    local dir = api_get_property(player_id, "dir");
 
     ROD_STATE = REELING;
 
     -- Reel in, set the position back to the rod
-    click_pos_x = (player_pos["x"] + 16);
+    if (dir == "right") then
+        click_pos_x = (player_pos["x"] + 16);
+    else
+        click_pos_x = (player_pos["x"] - 20);
+    end
     click_pos_y = (player_pos["y"]);
 end --v_reel_in_lure()
 
