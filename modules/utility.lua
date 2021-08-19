@@ -74,7 +74,7 @@ function v_define_rod(id, name, tooltip, buy)
     api_define_item({
         id = id,
         name = name,
-        category = "Fishing Rods",
+        category = "Tool",
         tooltip = tooltip,
         shop_key = false,
         shop_buy = buy,

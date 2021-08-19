@@ -6,6 +6,7 @@
 spr_fishing_spot = nil;
 spr_fishing_rod = nil;
 spr_fishing_lure = nil;
+spr_trident = nil;
 
 -- GLOBALS
 TICK_NUM = 0; -- custom tick count

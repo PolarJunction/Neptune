@@ -10,7 +10,7 @@ function register()
     return {
         name = "Neptune",
         hooks = {"clock", "key", "draw", "tick", "click", "ready"},
-        modules = {"utility", "globals", "fishing"}
+        modules = {"utility", "globals", "fishing", "artifact"}
     }
 end --register()
 
@@ -76,6 +76,20 @@ function init()
         invisible = true
     }, "sprites/fishing-spot-dummy.png")
 
+    -- Add our artifacts
+    api_define_item({
+        id = "artifact0",
+        name = "Poseidon's Trident",
+        category = "Tool",
+        tooltip = "A rare and powerful trident, capable of controlling the tides.",
+        shop_key = false,
+        shop_buy = 0,
+        shop_sell = 10000,
+        singular = true },
+
+        ("sprites/artifact0.png") );
+
+
     -- Add the fisherman NPC
     npc_def = {
         id = 42,
@@ -116,8 +130,9 @@ function init()
 
     -- Add our sprites
     spr_fishing_spot = api_define_sprite("spot", "sprites/fishing-spot.png", 6);
-    spr_fishing_rod = api_define_sprite("rod", "sprites/fishing-rod-active.png", 2);
+    spr_fishing_rod = api_define_sprite("rod", "sprites/rod0_active.png", 2);
     spr_fishing_lure = api_define_sprite("lure", "sprites/fishing-lure.png", 4);
+    spr_trident = api_define_sprite("trident", "sprites/artifact0_active.png", 2);
 
     return "Success"
 end --init()
@@ -197,6 +212,8 @@ function draw()
     elseif (ROD_STATE == CASTED) then
         -- Clear any cast we had, fishing rod is no longer equipped
         ROD_STATE = READY
+    elseif (b_is_equipped("Neptune_artifact0")) then
+        v_draw_active_trident();
     end
 end --draw()
 
@@ -237,6 +254,8 @@ function click(button, click_type)
         if (b_is_equipped("Neptune_rod")) then
             v_cast_rod();
             api_create_log("click", "registered")
-        end   
+        elseif (b_is_equipped("Neptune_artifact0"))  then
+            v_activate_trident();
+        end 
     end
 end --click()
