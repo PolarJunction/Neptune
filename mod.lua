@@ -42,7 +42,7 @@ catch_ticks = 0; -- Store when the catch event was started to check if the playe
 --]]
 function register()
     -- register our mod name and the hooks we want
-    return {name = "Neptune", hooks = {"clock", "key", "draw", "tick", "click"}}
+    return {name = "Neptune", hooks = {"clock", "key", "draw", "tick", "click", "ready"}}
 end --register()
 
 
@@ -105,8 +105,43 @@ function init()
         shop_buy = 0,
         shop_sell = 0,
         tools = {"Neptune_rod0"},
-        invisible = false
+        invisible = true
     }, "sprites/fishing-spot-dummy.png")
+
+    -- Add the fisherman NPC
+    npc_def = {
+        id = 42,
+        name = "Poseidon",
+        pronouns = "He/Him",
+        tooltip = "Elderly fisherman",
+        shop = true,
+        walking = false,
+        stock = {"log","Neptune_rod0", "Neptune_rod1", "Neptune_rod2", "Neptune_rod3", "Neptune_rod4"}, -- max 10
+        specials = {"Neptune_bait0", "Neptune_bait1", "Neptune_bait2"}, -- must be 3
+        dialogue = {
+        "If I'm not fishing, I'm thinking about it..",
+        "A fisherman lives here, with the catch of his life..",
+        "I'd rather have a bad day fishing, than a good day at work..",
+        "Sometimes, when the water is quiet, you can almost hear the fish laughing at you..",
+        "Work is for people who can't fish",
+        "There is no losing in fishing. You either catch or you learn.."
+        },
+        greeting = "The sea calls you again? I've got wares that can help.."
+    }
+    
+    -- define npc
+    api_define_npc(npc_def,
+        "sprites/npc_standing.png",
+        "sprites/npc_standing_h.png",
+        "sprites/npc_walking.png",
+        "sprites/npc_walking_h.png",
+        "sprites/npc_head.png",
+        "sprites/npc_bust.png",
+        "sprites/npc_item.png",
+        "sprites/npc_dialogue_menu.png",
+        "sprites/npc_shop_menu.png"
+    )
+
 
     -- Add custom colors
     api_define_color("FISHING_LINE_COLOR", {r = 195, g = 210, b = 218});
@@ -118,6 +153,17 @@ function init()
 
     return "Success"
 end --init()
+
+function ready()
+    -- If we haven't already spawned our npc, spawn him now
+    fisherman_npc = api_get_menu_objects(nil, "npc42")
+    if (#fisherman_npc == 0) then
+        api_create_obj("npc42", 3467, 827);
+    end
+
+    -- TODO -remove
+    api_give_money(420)
+end
 
 
 --[[
@@ -199,6 +245,9 @@ function key(key_code)
         local py = player_pos["y"] + 40
 
         api_create_obj("Neptune_fishing_spot", px, py);
+
+        player = api_get_player_position()
+        api_create_log("Loc:", ("x:" .. tostring(player["x"]) .. " y:" .. tostring(player["y"]) ));
 
     end
 end --key()
