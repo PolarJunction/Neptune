@@ -25,44 +25,26 @@ function init()
     -- init the mod
     api_set_devmode(true);
 
+    -- Define all of the fishing rods
+    for id, rod in pairs(fishing_rods) do
+        v_define_fish(id, rod.name, rod.tooltip, rod.cost);
+    end
+
+    -- Define all of the junk items
+    for i=1, #junk_items do
+        v_define_junk(junk_items[i].id, junk_items[i].name, junk_items[i].tooltip, junk_items[i].sell_price);
+    end
+
     -- Define all of the catch-able fish
-    v_define_fish("fish0",  "Guppy",       "A small and tasty fish.", 10);
-    v_define_fish("fish1",  "Sardine",     "A small and tasty fish.", 10);
-    v_define_fish("fish2",  "Octopus",     "Clever and tricky to catch.", 10);
-    v_define_fish("fish3",  "Sea Snake",   "Wait, this isn't a fish?", 10);
-    v_define_fish("fish4",  "Mackerel",    "A small and tasty fish.", 10);
-    v_define_fish("fish5",  "Crab",        "A fiesty crustacean with snapping claws.", 10);
-    v_define_fish("fish6",  "Prawn",       "A small and tasty shellfish.", 10);
-    v_define_fish("fish7",  "Lobster",     "A classic and well sought after fish.", 10);
-    v_define_fish("fish8",  "Pufferfish",  "A big and exciting fish.", 10);
-    v_define_fish("fish9",  "Glowfish",    "A strange and elusive fish.", 10);
-    v_define_fish("fish10", "Lionfish",    "Poisonous, but nutritious when prepared carefully", 10);
-    v_define_fish("fish11", "Fossil",      "An ancient and rare fossil.", 10);
-
-    -- -- Define all of the fishing rods
-    v_define_rod("rod0", "Wooden Rod", "Grandad's old wooden fishing rod", 10);
-    v_define_rod("rod1", "Lightweight Rod", "Modern aluminium fishing rod.", 10);
-    v_define_rod("rod2", "Diamond Rod", "Premium, diamond standard fishing rod.", 10);
-    v_define_rod("rod3", "Uranium Rod", "Uranium enriched fishing rod.", 10);
-    v_define_rod("rod4", "Rainbow Rod", "Nanobii's legendary fishing rod.", 10);
-
-    -- -- Define all of the junk items
-    v_define_junk("junk0", "Seaweed", "Slimy green vegetation.", 10);
-    v_define_junk("junk1", "Broken Rod", "Useless broken fishing rod.", 10);
-    v_define_junk("junk2", "Rusty Sword", "A distant memory of the honey wars.", 10);
-    v_define_junk("junk3", "Slimy Rock", "Shiny clear stone covered in seaweed, worthless.", 10);
-    v_define_junk("junk4", "Old Rubber", "A pile of old rubber.", 10);
-    v_define_junk("junk5", "Golden Key", "Ancient key that vibrates slightly when held, probably doesn't unlock anything useful.", 10);
-    v_define_junk("junk6", "Old Boots", "Grandad's old boots.", 10);
-    v_define_junk("junk7", "Ruined Book", "A ruined copy of Tales to Astonish #70.", 10);
-    v_define_junk("junk8", "Anchor", "Old ship anchor, not as heavy as it should be.", 10);
-
-    -- -- Define all of the fishing bait
-    v_define_bait("bait0", "Bread Crumbs", "Small chunks of crusty bread", 10);
-    v_define_bait("bait1", "Small Worms", "Small wriggly worms, ideal for attracting small fish", 10);
-    v_define_bait("bait2", "Large Worms", "Large wriggly worms, ideal for attracting large fish", 10);
-    v_define_bait("bait3", "Exotic Worms", "Exotic wriggly worms, ideal for attracting exotic fish", 10);
-
+    for i=1, #fish do
+        v_define_fish(fish[i].id, fish[i].name, fish[i].tooltip, fish[i].sell_price);
+    end
+    
+    -- Define all of the fishing bait
+    for i=1, #bait_items do
+        v_define_bait(bait_items[i].id, bait_items[i].name, bait_items[i].tooltip, bait_items[i].cost);
+    end
+    
     -- Add our custom objects
     api_define_object({
         id = "fishing_spot",

@@ -1,3 +1,4 @@
+
 --[[
   Name: v_cast_rod()
   Desc: Handle an attempt to cast the rod
@@ -151,20 +152,19 @@ function v_draw_active_fishing_rod()
     end
 end --v_draw_active_fishing_rod()
 
-
 --[[
     Name: v_check_for_fish()
     Desc: Check if we caught a fish
     Params: N/A
-    Returns: N/A 
+    Returns: N/A
 --]]
 function v_check_for_fish()
     -- Check if we are casted
     -- Check if the lure is within x range of a fishing spot
-    local i_num = api_random(100);
 
+    local i_num = api_random(100);
     -- 5% chance of successfully fishing
-    if (i_num < 8) then
+    if (i_num <= fishing_rods[equipped_rod].catch_chance) then
         -- successful
         v_start_catch_event();
     end
