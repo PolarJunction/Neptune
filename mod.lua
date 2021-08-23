@@ -81,7 +81,7 @@ function init()
         shop = true,
         walking = false,
         stock = {"log","Neptune_rod0", "Neptune_rod1", "Neptune_rod2", "Neptune_rod3", "Neptune_rod4"}, -- max 10
-        specials = {"Neptune_bait0", "Neptune_bait1", "Neptune_bait2", "Neptune_bait3"}, -- must be 3
+        specials = { "Neptune_bait1", "Neptune_bait2", "Neptune_bait3"}, -- must be 3
         dialogue = {
         "If I'm not fishing, I'm thinking about it..",
         "A fisherman lives here, with the catch of his life..",
@@ -112,7 +112,13 @@ function init()
 
     -- Add our sprites
     spr_fishing_spot = api_define_sprite("spot", "sprites/fishing-spot.png", 6);
-    spr_fishing_rod = api_define_sprite("rod", "sprites/rod0_active.png", 2);
+
+    api_define_sprite("rod0", "sprites/rod0_active.png", 2);
+    api_define_sprite("rod1", "sprites/rod1_active.png", 2);
+    api_define_sprite("rod2", "sprites/rod2_active.png", 2);
+    api_define_sprite("rod3", "sprites/rod3_active.png", 2);
+    api_define_sprite("rod4", "sprites/rod4_active.png", 2);
+
     spr_fishing_lure = api_define_sprite("lure", "sprites/fishing-lure.png", 4);
     spr_trident = api_define_sprite("trident", "sprites/artifact0_active.png", 2);
 
@@ -172,6 +178,8 @@ function tick()
     -- Update the tick num, used for time periodic timing
     TICK_NUM = TICK_NUM + 1;
 
+    v_check_rod_equipped();
+
     frm_fishing_spot = i_counter(frm_fishing_spot, 0, 5, 5);
     lure_bob = i_counter(lure_bob, 0, 2, 10);
 end --tick()
@@ -188,12 +196,8 @@ function draw()
     v_draw_animated_fishing_spots();
 
     -- If we have fishing rod equiped, draw it
-    if (b_is_equipped("Neptune_rod")) then
+    if (ROD_STATE >= READY) then
         v_draw_active_fishing_rod();
-
-    elseif (ROD_STATE == CASTED) then
-        -- Clear any cast we had, fishing rod is no longer equipped
-        ROD_STATE = READY
     elseif (b_is_equipped("Neptune_artifact0")) then
         v_draw_active_trident();
     end

@@ -4,7 +4,6 @@
 
 -- SPRITES
 spr_fishing_spot = nil;
-spr_fishing_rod = nil;
 spr_fishing_lure = nil;
 spr_trident = nil;
 
@@ -14,11 +13,12 @@ TICK_NUM = 0; -- custom tick count
 frm_fishing_spot = 0; -- Animate fishing spot - frame counter
 
 ROD_STATE = 0; -- Store casting state, READY, CASTING, CASTED, REELING
-READY = 0;
-CASTING = 1;
-CASTED = 2;
-REELING = 3;
-CATCHING = 4;
+NOT_EQUIPPED = 0;
+READY = 1;
+CASTING = 2;
+CASTED = 3;
+REELING = 4;
+CATCHING = 5;
 
 equipped_rod = "";
 

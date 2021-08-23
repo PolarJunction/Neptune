@@ -46,6 +46,36 @@ end --v_cast_rod()
 
 
 --[[
+    Name: v_check_rod_equipped()
+    Desc: Check if we have a rod equipped and set the correct ROD_STATE
+    Params: N/A
+    Returns: N/A
+--]]
+function v_check_rod_equipped()
+    -- Check what the currently equipped item, and check if it's changed
+    -- If its not a rod, set not equipped state
+    local currently_equipped = api_get_equipped();
+
+    if ( (b_is_equipped("Neptune_rod") == false) and (ROD_STATE ~= NOT_EQUIPPED) ) then
+        -- If we don't have a rod, make sure NOT_EQUIPPED is set
+        ROD_STATE = NOT_EQUIPPED;
+        equipped_rod = "";
+
+    elseif (b_is_equipped("Neptune_rod") == true) then
+        -- If we have a rod equipped, check if it has changed
+        local rodId = string.sub(currently_equipped, -4)
+
+        if (rodId ~= equipped_rod) or (ROD_STATE == NOT_EQUIPPED) then
+            -- We've changed rods, reel in
+            ROD_STATE = READY;
+
+            -- Set currently equipped rod
+            equipped_rod = rodId;
+        end
+    end
+end
+
+--[[
     Name: v_draw_animated_fishing_spots()
     Desc: Draw animated fishing spot sprites on top of any fishing_spot objects in the world
           fishing_spot objects themselves remain invisible
@@ -78,6 +108,7 @@ function v_draw_active_fishing_rod()
     local camera_pos = api_get_camera_position();
     local player_id = api_get_player_instance(); -- used to determine the players direction
     local dir = api_get_property(player_id, "dir");
+    local spr_fishing_rod = api_get_sprite("sp_" .. equipped_rod); -- sprite id matches spr + the rodId i.e sp_rod0
 
     -- Player position on screen
     local px = player_pos["x"] - camera_pos["x"];
