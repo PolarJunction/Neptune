@@ -30,44 +30,50 @@ lure_pos_y = 0;
 lure_bob = 0;
 lure_nearby_fishing_spots = 0;
 
+-- Number of each item type defined
+num_junk_items = 0; 
+num_fish_items = 0;
+num_bait_items = 0;
+num_rod_items = 0;
+
 catch_ticks = 0; -- Store when the catch event was started to check if the player clicked in time
 
 -- Define our fishing rods
 fishing_rods = {
 
     ["rod0"] = {    name = "Wooden Rod", tooltip = "Grandad's old wooden fishing rod", cost = 100,
-                    line_length = 60, catch_time = 10, catch_chance = 4, fish_chance = 70,
-                    fish = {
+                    line_length = 60, catch_time = 10, catch_chance = 4, fish_chance = 30,
+                    available_fish = {
                         { id = "fish0", chance_s = 0, chance_e = 10},
-                        { id = "fish1", chance_s = 10, chance_e = 100}
+                        { id = "fish1", chance_s = 11, chance_e = 100}
                     }};
 
     ["rod1"] = {    name = "Lightweight Rod", tooltip = "Modern aluminium fishing rod", cost = 1000,
-                    line_length = 75, catch_time = 12, catch_chance = 6, fish_chance = 75,
-                    fish = {
+                    line_length = 75, catch_time = 12, catch_chance = 6, fish_chance = 40,
+                    available_fish = {
                         { id = "fish0", chance_s = 0, chance_e = 10 },
-                        { id = "fish1", chance_s = 10, chance_e = 100 }
+                        { id = "fish1", chance_s = 11, chance_e = 100 }
                     }};
 
     ["rod2"] = {    name = "Diamond Rod", tooltip = "Premium, diamond standard fishing rod", cost = 10000,
-                    line_length = 100, catch_time = 15, catch_chance = 8, fish_chance = 80,
-                    fish = {
+                    line_length = 100, catch_time = 15, catch_chance = 8, fish_chance = 50,
+                    available_fish = {
                         { id = "fish0", chance_s = 0, chance_e = 10 },
-                        { id = "fish1", chance_s = 10, chance_e = 100 }
+                        { id = "fish1", chance_s = 11, chance_e = 100 }
                     }};
 
     ["rod3"] = {    name = "Uranium Rod", tooltip = "Uranium enriched fishing rod", cost = 20000,
-                    line_length = 125, catch_time = 18, catch_chance = 10, fish_chance = 85,
-                    fish = {
+                    line_length = 125, catch_time = 18, catch_chance = 10, fish_chance = 60,
+                    available_fish = {
                         { id = "fish0", chance_s = 0, chance_e = 10 },
-                        { id = "fish1", chance_s = 10, chance_e = 100 }
+                        { id = "fish1", chance_s = 11, chance_e = 100 }
                     }};
 
     ["rod4"] = {    name = "Rainbow Rod", tooltip = "Nanobii's legendary fishing rod", cost = 50000,
-                    line_length = 150, catch_time = 20, catch_chance = 15, fish_chance = 90,
-                    fish = {
-                        { id = "fish0", chance_s = 0, chance_e = 10 },
-                        { id = "fish1", chance_s = 10, chance_e = 100 }
+                    line_length = 150, catch_time = 20, catch_chance = 15, fish_chance = 70,
+                    available_fish = {
+                        { id = "fish0", chance_s = 0, chance_e = 40 },
+                        { id = "fish1", chance_s = 41, chance_e = 100 }
                     }};
 };
 

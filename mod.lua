@@ -27,22 +27,26 @@ function init()
 
     -- Define all of the fishing rods
     for id, rod in pairs(fishing_rods) do
-        v_define_fish(id, rod.name, rod.tooltip, rod.cost);
+        v_define_rod(id, rod.name, rod.tooltip, rod.cost);
+        num_rod_items = num_rod_items + 1;
     end
 
     -- Define all of the junk items
     for id, junk in pairs(junk_items) do
         v_define_junk(id, junk.name, junk.tooltip, junk.sell_price);
+        num_junk_items = num_junk_items + 1;
     end
 
     -- Define all of the catch-able fish
     for id, fish in pairs(fish_items) do
         v_define_fish(id, fish.name, fish.tooltip, fish.sell_price);
+        num_fish_items = num_fish_items + 1;
     end
 
     -- Define all of the fishing bait
     for id, bait in pairs(bait_items) do
         v_define_bait(id, bait.name, bait.tooltip, bait.cost);
+        num_bait_items = num_bait_items + 1;
     end
 
     -- Add our custom objects
@@ -222,7 +226,8 @@ function key(key_code)
 
         player = api_get_player_position()
         api_create_log("Loc:", ("x:" .. tostring(player["x"]) .. " y:" .. tostring(player["y"]) ));
-
+    elseif (key_code == 70) then
+        v_spawn_random_catch_reward();
     end
 end --key()
 

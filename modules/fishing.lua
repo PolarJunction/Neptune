@@ -230,17 +230,15 @@ function v_spawn_random_catch_reward()
     local i_num = api_random(10000);
     
     if (i_num < 5) then -- 0.05%
-        -- api_give_item("Neptune_artifact0")
-    elseif (i_num < 2500) then
-        -- spawn fish
+        api_give_item("Neptune_artifact0")
+    elseif (i_num < (fishing_rods[equipped_rod].fish_chance * 100)) then
+        api_create_log(tostring(i_num), "spawn_fish");
+        -- Spawn fish
         v_spawn_fish();
-
-        api_create_log("Spawn", "fish");
     else
+        api_create_log(tostring(i_num), "spawn_junk");
+        -- Spawn random junk item
         v_spawn_junk();
-
-        api_create_log("Spawn", "junk");
-        -- spawn junk
     end
 end
 
@@ -252,33 +250,19 @@ end
     Returns: N/A
 --]]
 function v_spawn_fish()
-    local i_num = api_random(2500);
-    api_create_log("Spawn", "fish");
 
-    if (i_num < 20) then
-        api_give_item("Neptune_fish11"); -- Fossil
-    elseif (i_num < 50) then
-        api_give_item("Neptune_fish10"); -- Lionfish
-    elseif (i_num < 100) then
-        api_give_item("Neptune_fish9"); -- Glowfish
-    elseif (i_num < 200) then
-        api_give_item("Neptune_fish8"); -- Pufferfish
-    elseif (i_num < 400) then
-        api_give_item("Neptune_fish7"); -- Lobster
-    elseif (i_num < 600) then
-        api_give_item("Neptune_fish6"); -- Prawn
-    elseif (i_num < 900) then
-        api_give_item("Neptune_fish5"); -- Crab
-    elseif (i_num < 1200) then
-        api_give_item("Neptune_fish4"); -- Mackerel
-    elseif (i_num < 1600) then
-        api_give_item("Neptune_fish3"); -- Sea Snake
-    elseif (i_num < 1750) then
-        api_give_item("Neptune_fish2"); -- Octopus
-    elseif (i_num < 2000) then
-        api_give_item("Neptune_fish1"); -- Sardine
-    else
-        api_give_item("Neptune_fish0"); -- Guppy
+    -- Roll from 0-100
+    -- Get a list of available fish for the given rod
+    -- Check the roll against the chance min/max for each fish
+
+    local available_fish = fishing_rods[equipped_rod].available_fish;
+    local i_num = api_random(100);
+
+    for i=1, #available_fish do
+        if ((available_fish[i].chance_s <= i_num) and (available_fish[i].chance_e >= i_num )) then
+            api_give_item("Neptune_" .. available_fish[i].id);
+            api_create_log("fish spawn:", "Neptune_" .. available_fish[i].id);
+        end
     end
 
 end
@@ -290,15 +274,10 @@ end
     Returns: N/A
 --]]
 function v_spawn_junk()
-
-    local i_num = math.floor(api_random(8));
-    -- local s_item = ("Neptune_junk" .. tostring(i_num));
-
-    -- api_create_log("Spawn", s_item);
-
+    local i_num = math.floor(api_random((num_junk_items) - 1));
 
     api_give_item(("Neptune_junk" .. tostring(i_num)));
-
+    api_create_log("junk spawn:", ("Neptune_junk" .. tostring(i_num)));
 end
 
 
