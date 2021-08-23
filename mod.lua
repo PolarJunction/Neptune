@@ -31,20 +31,20 @@ function init()
     end
 
     -- Define all of the junk items
-    for i=1, #junk_items do
-        v_define_junk(junk_items[i].id, junk_items[i].name, junk_items[i].tooltip, junk_items[i].sell_price);
+    for id, junk in pairs(junk_items) do
+        v_define_junk(id, junk.name, junk.tooltip, junk.sell_price);
     end
 
     -- Define all of the catch-able fish
-    for i=1, #fish do
-        v_define_fish(fish[i].id, fish[i].name, fish[i].tooltip, fish[i].sell_price);
+    for id, fish in pairs(fish_items) do
+        v_define_fish(id, fish.name, fish.tooltip, fish.sell_price);
     end
-    
+
     -- Define all of the fishing bait
-    for i=1, #bait_items do
-        v_define_bait(bait_items[i].id, bait_items[i].name, bait_items[i].tooltip, bait_items[i].cost);
+    for id, bait in pairs(bait_items) do
+        v_define_bait(id, bait.name, bait.tooltip, bait.cost);
     end
-    
+
     -- Add our custom objects
     api_define_object({
         id = "fishing_spot",

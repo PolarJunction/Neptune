@@ -32,7 +32,7 @@ function v_cast_rod()
         -- Check if the player was quick enough
         local t_delta = TICK_NUM - catch_ticks;
 
-        if (t_delta < 15) then
+        if (t_delta < fishing_rods[equipped_rod].catch_time) then
             -- Successful catch
             v_spawn_random_catch_reward();
         end
@@ -150,7 +150,7 @@ function v_draw_active_fishing_rod()
         -- If the line is out, check it doesn't get longer than the rod limit
         if (ROD_STATE ~= READY) then
             v_check_fishing_line_length(rod_top_x + camera_pos["x"], rod_top_y + camera_pos["y"],
-                                        lure_pos_x, lure_pos_y, 100);
+                                        lure_pos_x, lure_pos_y, fishing_rods[equipped_rod].line_length);
         end
 
         -- Animate the lure position slightly in Y direction to create a bob effect
