@@ -255,16 +255,20 @@ function v_spawn_fish()
     -- Get a list of available fish for the given rod
     -- Check the roll against the chance min/max for each fish
 
-    local available_fish = fishing_rods[equipped_rod].available_fish;
+    local available_fish = fishing_rods[equipped_rod].available_fish[lure_biome];
     local i_num = api_random(100);
+    local chance_total = 0;
 
-    for i=1, #available_fish do
-        if ((available_fish[i].chance_s <= i_num) and (available_fish[i].chance_e >= i_num )) then
-            api_give_item("Neptune_" .. available_fish[i].id);
-            api_create_log("fish spawn:", "Neptune_" .. available_fish[i].id);
+    for id, chance in pairs(available_fish) do
+        if (i_num >= chance_total) and (i_num < (chance_total + chance)) then
+            api_give_item("Neptune_" .. id);
+            api_create_log("Fish spawn: ", "Neptune_" .. id);
+
+            break;
         end
-    end
 
+        chance_total = chance_total + chance;
+    end
 end
 
 --[[
@@ -366,7 +370,20 @@ end --v_reel_in_lure()
 function v_handle_lure_landing()
     -- Get the tile type under the lure
     local lure_tile = api_get_ground(lure_pos_x, lure_pos_y);
+    local biome = string.sub(lure_tile, -1);
 
+    -- Record the biome of the tile that the lure landed on
+    if (biome == "1") then
+        lure_biome = "forest";
+    elseif (biome == "2") then
+        lure_biome = "swamp";
+    elseif (biome == "3") then
+        lure_biome = "tundra";
+    else
+        lure_biome = "hallow";
+    end
+
+    -- Check what tile type the lure landed on, and activate the correct effect
     if (string.match(lure_tile, "water")) then
         -- shallow water splash
         api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 40,
