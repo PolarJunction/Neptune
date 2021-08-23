@@ -216,6 +216,7 @@ function v_start_catch_event()
     api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 80,
                           "FISHING_LINE_COLOR");
 
+    api_play_sound("plop");
 end
 
 
