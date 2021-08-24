@@ -126,8 +126,18 @@ function init()
     spr_fishing_lure = api_define_sprite("lure", "sprites/fishing-lure.png", 4);
     spr_trident = api_define_sprite("trident", "sprites/artifact0_active.png", 2);
 
+
+    api_define_command("/teleport", "teleport_command")
+
     return "Success"
 end --init()
+
+-- command run when player types "/teleport"
+function teleport_command(args) 
+    -- args are a list of args after /teleport seperated by spaces
+    -- for example we could type "/teleport 100 50" in this case
+    api_set_player_position(args[1], args[2])
+  end
 
 
 --[[
