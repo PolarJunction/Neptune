@@ -78,7 +78,7 @@ function v_define_rod(id, name, tooltip, buy)
         tooltip = tooltip,
         shop_key = false,
         shop_buy = buy,
-        shop_sell = (buy / 2),
+        shop_sell = math.floor(buy / 2),
         singular = true },
 
         ("sprites/" .. id .. ".png") );

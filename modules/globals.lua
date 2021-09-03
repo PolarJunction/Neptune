@@ -109,7 +109,7 @@ fishing_rods = {
     ["rod2"] = {
         name = "Diamond Rod",
         tooltip = "Premium, diamond standard fishing rod",
-        cost = 10000,
+        cost = 3000,
         line_length = 110,
         catch_time = 15,
         catch_chance = 8,
@@ -129,7 +129,7 @@ fishing_rods = {
     ["rod3"] = {
         name = "Uranium Rod",
         tooltip = "Uranium enriched fishing rod",
-        cost = 20000,
+        cost = 6000,
         line_length = 150,
         catch_time = 18,
         catch_chance = 10,
@@ -149,7 +149,7 @@ fishing_rods = {
     ["rod4"] = {
         name = "Rainbow Rod",
         tooltip = "Nanobii's legendary fishing rod",
-        cost = 50000,
+        cost = 9999,
         line_length = 220,
         catch_time = 20,
         catch_chance = 15,
@@ -164,7 +164,6 @@ fishing_rods = {
 
             ["hallow"] = {[GUPPY] = 10, [SARDINE] = 10, [TOWER_SHELL] = 10, [SQUID] = 15, [OCTOPUS] = 25, [GLOW_FISH] = 25, [FOSSIL] = 5}
         }
-        
     }
 };
 
@@ -174,61 +173,61 @@ junk_items = {
     ["junk0"] = {
         name = "Seaweed",
         tooltip = "Slimy green vegetation",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk1"] = {
         name = "Broken Rod",
         tooltip = "Useless broken fishing rod",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk2"] = {
         name = "Rusty Sword",
         tooltip = "A distant memory of the honey wars of old",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk3"] = {
         name = "Slimy Rock",
         tooltip = "Shiny clear stone covered in seaweed, worthless",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk4"] = {
         name = "Old Rubber",
         tooltip = "A pile of old rubber",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk5"] = {
         name = "Golden Key",
         tooltip = "Ancient key that vibrates slightly when held, probably doesn't unlock anything useful",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk6"] = {
         name = "Old Boots",
         tooltip = "Grandad's old boots",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk7"] = {
         name = "Ruined Book",
         tooltip = "A ruined copy of Tales to Astonish #70",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk8"] = {
         name = "Anchor",
         tooltip = "Old shop anchor, not as heavy as it should be",
-        sell_price = 10
+        sell_price = 1
     },
 
     ["junk9"] = {
         name = "Fish Skeleton",
         tooltip = "The remains of a dead fish",
-        sell_price = 10
+        sell_price = 1
     }
 };
 
@@ -244,7 +243,7 @@ bait_items = {
     ["bait1"] = {
         name = "Small Worms",
         tooltip = "Small wriggly worms, small chance of attracting fish",
-        cost = 2
+        cost = 1
     },
 
     ["bait2"] = {
@@ -255,7 +254,7 @@ bait_items = {
 
     ["bait3"] = {
         name = "Exotic Worms",
-        tooltip = "Exotic wriggly worms, guaranteed to attract fish",
+        tooltip = "Exotic wriggly worms, almost guaranteed to attract fish",
         cost = 5
     }
 };
@@ -270,19 +269,19 @@ fish_items = {
     [GUPPY] = {
         name = "Guppy",
         tooltip = "A small and tasty fish",
-        sell_price = 10
+        sell_price = 2
     },
 
     [SARDINE] = {
         name = "Sardine",
         tooltip = "A small and tasty fish",
-        sell_price = 10
+        sell_price = 2
     },
 
     [FOSSIL] = {
         name = "Fossil",
         tooltip = "An ancient and rare fossil",
-        sell_price = 150
+        sell_price = 50
     },
 
 
@@ -294,31 +293,31 @@ fish_items = {
     [PRAWN] = {
         name = "Prawn",
         tooltip = "A small and tasty shellfish",
-        sell_price = 15
+        sell_price = 5
     },
 
     [MACKEREL] = {
         name = "Mackerel",
         tooltip = "A large and tasty fish, popular for its oil",
-        sell_price = 20
+        sell_price = 10
     },
 
     [SUN_FISH] = {
         name = "Sun Fish",
         tooltip = "A massive and bright fish with rainbow underbelly scales",
-        sell_price = 30
+        sell_price = 15
     },
 
     [PARROT_FISH] = {
         name = "Parrot Fish",
         tooltip = "A bright and attractive fish with intricate patterns on its body",
-        sell_price = 35
+        sell_price = 20
     },
 
     [ANGEL_FISH] = {
         name = "Angel Fish",
         tooltip = "A very popular freshwater aquariam fish due to its majestic appearance and ease of care",
-        sell_price = 50
+        sell_price = 25
     },
 
 
@@ -329,25 +328,25 @@ fish_items = {
     [SEA_SNAKE] = {
         name = "Sea Snake",
         tooltip = "Wait, this isn't a fish?",
-        sell_price = 15
+        sell_price = 5
     },
 
     [LION_FISH] = {
         name = "Lionfish",
         tooltip = "Venomous marine fish, but nutritious when prepared carefully",
-        sell_price = 20
+        sell_price = 10
     },
 
     [DAB] = {
         name = "Dab",
         tooltip = "A tasty flatfish that lives on sandy bottoms",
-        sell_price = 30
+        sell_price = 15
     },
 
     [PUFFER_FISH] = {
         name = "Pufferfish",
         tooltip = "A big and exciting fish",
-        sell_price = 35
+        sell_price = 20
     },
 
     
@@ -359,31 +358,31 @@ fish_items = {
     [CRAB] = {
         name = "Crab",
         tooltip = "A fiesty crustacean with snapping claws",
-        sell_price = 15
+        sell_price = 5
     },
 
     [LOBSTER] = {
         name = "Lobster",
         tooltip = "A classic and well sought after fish",
-        sell_price = 20
+        sell_price = 10
     },
 
     [JELLY_FISH] = {
         name = "Jellyfish",
         tooltip = "A gelatinous and bioluminescent creature with trailing tentacles",
-        sell_price = 30
+        sell_price = 15
     },
 
     [FLOUNDER] = {
         name = "Flounder",
         tooltip = "An modestly sized fish with an unusual flat shape",
-        sell_price = 35
+        sell_price = 20
     },
 
     [STAR_FISH] = {
         name = "Starfish",
         tooltip = "Beautiful marine creature found in a variaty of shapes, colours and sizes",
-        sell_price = 50
+        sell_price = 25
     },
 
 
@@ -394,25 +393,25 @@ fish_items = {
     [TOWER_SHELL] = {
         name = "Tower Shell",
         tooltip = "The shell of a medium-sized sea snail",
-        sell_price = 15
+        sell_price = 5
     },
 
     [SQUID] = {
         name = "Squid",
         tooltip = "A strange creature with an elongated body, large eyes and ten appendages",
-        sell_price = 20
+        sell_price = 10
     },
 
     [OCTOPUS] = {
         name = "Octopus",
         tooltip = "Clever and tricky to catch",
-        sell_price = 30
+        sell_price = 15
     },
 
     [GLOW_FISH] = {
         name = "Glowfish",
         tooltip = "A strange and elusive fish",
-        sell_price = 35
+        sell_price = 20
     },
 
 };

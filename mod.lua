@@ -84,7 +84,7 @@ function init()
         tooltip = "Elderly fisherman",
         shop = true,
         walking = false,
-        stock = {"log","Neptune_rod0", "Neptune_rod1", "Neptune_rod2", "Neptune_rod3", "Neptune_rod4"}, -- max 10
+        stock = {"Neptune_rod0", "Neptune_rod1", "Neptune_rod2", "Neptune_rod3", "Neptune_rod4"}, -- max 10
         specials = {"Neptune_bait1", "Neptune_bait2", "Neptune_bait3"}, -- must be 3
         dialogue = {
         "If I'm not fishing, I'm thinking about it..",
