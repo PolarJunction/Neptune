@@ -85,7 +85,7 @@ function init()
         shop = true,
         walking = false,
         stock = {"log","Neptune_rod0", "Neptune_rod1", "Neptune_rod2", "Neptune_rod3", "Neptune_rod4"}, -- max 10
-        specials = { "Neptune_bait1", "Neptune_bait2", "Neptune_bait3"}, -- must be 3
+        specials = {"Neptune_bait1", "Neptune_bait2", "Neptune_bait3"}, -- must be 3
         dialogue = {
         "If I'm not fishing, I'm thinking about it..",
         "A fisherman lives here, with the catch of his life..",
@@ -109,7 +109,6 @@ function init()
         "sprites/npc_dialogue_menu.png",
         "sprites/npc_shop_menu.png"
     )
-
 
     -- Add custom colors
     api_define_color("FISHING_LINE_COLOR", {r = 195, g = 210, b = 218});
@@ -152,6 +151,8 @@ function ready()
     if (#fisherman_npc == 0) then
         api_create_obj("npc42", 3467, 827);
     end
+
+    v_cleanup_fishing_spots();
 end
 
 
@@ -162,6 +163,12 @@ end
     Returns: N/A
 --]]
 function clock()
+
+    -- Cleanup any unexpected fishing spots
+    v_cleanup_fishing_spots();
+
+    -- Check if we should spawn a fishing spot
+    v_check_for_fishing_spot();
 
     -- If the lure has been casted
     if (ROD_STATE == CASTED) then
@@ -254,9 +261,13 @@ function click(button, click_type)
      -- Check if we have a fishing rod equipped
         if (b_is_equipped("Neptune_rod")) then
             v_cast_rod();
-            api_create_log("click", "registered")
+
+        elseif (b_is_equipped("Neptune_bait")) then
+            v_consume_bait();
+
         elseif (b_is_equipped("Neptune_artifact0"))  then
             v_activate_trident();
-        end 
+
+        end
     end
 end --click()

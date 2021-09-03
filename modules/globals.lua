@@ -37,6 +37,9 @@ num_rod_items = 0;
 
 catch_ticks = 0; -- Store when the catch event was started to check if the player clicked in time
 
+active_fishing_spots = 0; -- How many fishing spots are active on the screen, used to check if we need to spawn one
+fishing_spot_ids = {};
+
 -- Add globals for the fish types just to make it easier to define rod tables
 GUPPY = "fish0";
 SARDINE = "fish1";
@@ -87,7 +90,7 @@ fishing_rods = {
         name = "Lightweight Rod",
         tooltip = "Modern aluminium fishing rod",
         cost = 1000,
-        line_length = 75,
+        line_length = 80,
         catch_time = 12,
         catch_chance = 6,
         fish_chance = 40,
@@ -107,7 +110,7 @@ fishing_rods = {
         name = "Diamond Rod",
         tooltip = "Premium, diamond standard fishing rod",
         cost = 10000,
-        line_length = 100,
+        line_length = 110,
         catch_time = 15,
         catch_chance = 8,
         fish_chance = 50,
@@ -127,7 +130,7 @@ fishing_rods = {
         name = "Uranium Rod",
         tooltip = "Uranium enriched fishing rod",
         cost = 20000,
-        line_length = 125,
+        line_length = 150,
         catch_time = 18,
         catch_chance = 10,
         fish_chance = 60,
@@ -147,7 +150,7 @@ fishing_rods = {
         name = "Rainbow Rod",
         tooltip = "Nanobii's legendary fishing rod",
         cost = 50000,
-        line_length = 150,
+        line_length = 220,
         catch_time = 20,
         catch_chance = 15,
         fish_chance = 70,
@@ -234,25 +237,25 @@ bait_items = {
 
     ["bait0"] = {
         name = "Bread Crumbs",
-        tooltip = "Small chunks of crusty bread, increases chances of catching fish slightly",
+        tooltip = "Small chunks of crusty bread, slight chance of attracting fish",
         cost = 1
     },
 
     ["bait1"] = {
         name = "Small Worms",
-        tooltip = "Small wriggly worms, increases chances of attracting fish",
+        tooltip = "Small wriggly worms, small chance of attracting fish",
         cost = 2
     },
 
     ["bait2"] = {
         name = "Large Worms",
-        tooltip = "Large wriggly worms, increases chances of attracting fish greatly",
+        tooltip = "Large wriggly worms, good chance of attracting fish",
         cost = 3
     },
 
     ["bait3"] = {
         name = "Exotic Worms",
-        tooltip = "Exotic wriggly worms, guarantees attracting a fish everytime",
+        tooltip = "Exotic wriggly worms, guaranteed to attract fish",
         cost = 5
     }
 };

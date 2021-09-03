@@ -1,11 +1,9 @@
-
 --[[
   Name: v_cast_rod()
   Desc: Handle an attempt to cast the rod
   Params: N/A
   Returns: N/A
---]]
-function v_cast_rod()
+--]] function v_cast_rod()
     if (ROD_STATE == READY) then
         -- cast away
         local mouse = api_get_mouse_position();
@@ -36,14 +34,13 @@ function v_cast_rod()
             -- Successful catch
             v_spawn_random_catch_reward();
         end
-        
+
         v_reel_in_lure();
     else
         -- already casted, reel in
         v_reel_in_lure();
     end
-end --v_cast_rod()
-
+end -- v_cast_rod()
 
 --[[
     Name: v_check_rod_equipped()
@@ -56,7 +53,7 @@ function v_check_rod_equipped()
     -- If its not a rod, set not equipped state
     local currently_equipped = api_get_equipped();
 
-    if ( (b_is_equipped("Neptune_rod") == false) and (ROD_STATE ~= NOT_EQUIPPED) ) then
+    if ((b_is_equipped("Neptune_rod") == false) and (ROD_STATE ~= NOT_EQUIPPED)) then
         -- If we don't have a rod, make sure NOT_EQUIPPED is set
         ROD_STATE = NOT_EQUIPPED;
         equipped_rod = "";
@@ -71,6 +68,7 @@ function v_check_rod_equipped()
 
             -- Set currently equipped rod
             equipped_rod = rodId;
+
         end
     end
 end
@@ -84,17 +82,159 @@ end
 --]]
 function v_draw_animated_fishing_spots()
     -- get a list of nearby objects in camera view
-    local objs = api_get_objects();
+    local objs = api_get_objects(nil, "Neptune_fishing_spot");
     local camera_pos = api_get_cam();
+    active_fishing_spots = 0;
 
     for i = 1, #objs do
-        if (objs[i]["oid"] == "Neptune_fishing_spot") then
-            px = (objs[i]["x"] - camera_pos["x"]);
-            py = (objs[i]["y"] - camera_pos["y"]);
-            api_draw_sprite(spr_fishing_spot, frm_fishing_spot, px, py);
+        px = (objs[i]["x"] - camera_pos["x"]);
+        py = (objs[i]["y"] - camera_pos["y"]);
+        api_draw_sprite(spr_fishing_spot, frm_fishing_spot, px, py);
+
+        -- Record how many fishing spots we have active at the moment
+        active_fishing_spots = active_fishing_spots + 1;
+    end
+end -- v_draw_animated_fishing_spots()
+
+--[[
+    Name: v_consume_bait()
+    Desc: Handle the actions for throwing bait into water
+    Params: N/A
+    Returns: N/A
+--]]
+function v_consume_bait()
+    -- Get the position under the mouse
+    local mouse = api_get_mouse_position();
+
+    -- Check what slots contain the bait thrown
+    local bait_item = api_get_equipped();
+    local tile = api_get_ground(mouse["x"], mouse["y"]);
+
+    -- Check the bait was thrown into shallow/deep water
+    if (string.match(tile, "water") or string.match(tile, "deep")) then
+        -- Double check it is actually bait we have
+        if (b_is_equipped("Neptune_bait")) then
+            -- Get player slots
+            local slot = api_slot_match(api_get_player_instance(), {bait_item},
+                                        true)
+
+            if (slot ~= nil) then
+                -- reduce whatever is in the first slot by 2, if anything
+                api_slot_decr(slot["id"], 1)
+
+                -- Give a chance of spawning a fishing spot
+                local i_roll = api_random(100);
+                local tgt_roll = 80;
+                local timer = 60;
+
+                if (bait_item == "Neptune_bait1") then
+                    tgt_roll = 70;
+                    timer = 80;
+                elseif (bait_item == "Neptune_bait2") then
+                    tgt_roll = 60;
+                    timer = 100;
+                elseif (bait_item == "Neptune_bait3") then
+                    tgt_roll = 50;
+                    timer = 120;
+                elseif (bait_item == "Neptune_bait4") then
+                    tgt_roll = 0;
+                    timer = 180;
+                end
+
+                if (i_roll > tgt_roll) then
+                    v_spawn_fishing_spot(mouse["x"] - 1, mouse["y"] - 1, timer);
+                end
+
+                -- Create a splash effect
+                api_create_effect(mouse["x"], mouse["y"], "EXTRACT_DUST", 30,
+                                  "FISHING_LINE_COLOR");
+            end
         end
     end
-end --v_draw_animated_fishing_spots()
+end -- v_consume_bait()
+
+
+--[[
+    Name: v_spawn_fishing_spot()
+    Desc: Spawn a fishing spot at a given pos, with a given lifetime
+    Params: X & Y Position, life time in seconds
+    Returns: N/A
+--]]
+function v_spawn_fishing_spot(x, y, timer)
+    -- Spawn a fishing spot at the location
+    local spot_id = api_create_obj("Neptune_fishing_spot", x, y);
+    -- Despawn it after a short time, depending on the quality of bait used
+    api_create_timer("api_destroy_inst", timer, spot_id)
+    -- Add it to the list of known id's so it doesn't get cleaned up
+    fishing_spot_ids[spot_id] = true;
+end -- v_spawn_fishing_spot()
+
+
+--[[
+    Name: v_cleanup_fishing_spots()
+    Desc: Check if there are any fishing spots that weren't spawned in this play
+    Params: N/A
+    Returns: N/A
+--]]
+function v_cleanup_fishing_spots()
+    -- Get all active fishing spots and check they have been spawned since the game started
+    local objs = api_get_objects(nil, "Neptune_fishing_spot");
+
+    for i=1, #objs do
+        if (fishing_spot_ids[(objs[i]["id"])] == nil) then
+            -- otherwise, remove them
+            api_destroy_inst(objs[i]["id"]);
+        end
+    end
+end -- v_cleanup_fishing_spots()
+
+
+--[[
+    Name: v_check_for_fishing_spot()
+    Desc: Check if we should spawn a fishing spot, find a random location
+    Params: N/A
+    Returns: N/A
+--]]
+function v_check_for_fishing_spot()
+-- Check periodically if we should spawn a fishing spot
+    if (active_fishing_spots < 2) then
+
+        local i_roll = api_random(100);
+
+        if (i_roll > 80) then
+            local radius = 20 * 16; -- 16 points per tile
+
+            local player_pos = api_get_player_tile_position();
+            local min_x = player_pos["x"] - radius;
+            local min_y = player_pos["y"] - radius;
+
+            -- Wrap minimum values
+            if (min_x < 0) then min_x = 0; end
+
+            if (min_y < 0) then min_y = 0; end
+
+            local deep_tiles = {};
+
+            for x = min_x, (player_pos["x"] + (radius)), 16 do
+                for y = min_y, (player_pos["y"] + (radius)), 16 do
+                    local tile = api_get_ground(x, y);
+
+                    if (string.match(tile, "deep")) then
+                        -- Add deep tile to list
+                        table.insert(deep_tiles, {xPos = x, yPos = y});
+                    end
+                end
+            end
+
+            if (#deep_tiles > 0) then
+                local idx = api_random(#deep_tiles);
+                -- Spawn a fishing spot at the location
+                v_spawn_fishing_spot(deep_tiles[idx].xPos, deep_tiles[idx].yPos, (60 + api_random(120)));
+                return;
+            end
+        end
+    end
+end -- v_check_for_fishing_spot()
 
 
 --[[
@@ -123,7 +263,7 @@ function v_draw_active_fishing_rod()
             api_draw_sprite_ext(spr_fishing_rod, 0, (px - 4), py, -1, 1, 0, 1, 1);
         end
     else
-        
+
         -- Draw fishing line - if casted
         local rod_top_x = px;
         local rod_top_y = py;
@@ -149,14 +289,16 @@ function v_draw_active_fishing_rod()
 
         -- If the line is out, check it doesn't get longer than the rod limit
         if (ROD_STATE ~= READY) then
-            v_check_fishing_line_length(rod_top_x + camera_pos["x"], rod_top_y + camera_pos["y"],
-                                        lure_pos_x, lure_pos_y, fishing_rods[equipped_rod].line_length);
+            v_check_fishing_line_length(rod_top_x + camera_pos["x"],
+                                        rod_top_y + camera_pos["y"], lure_pos_x,
+                                        lure_pos_y,
+                                        fishing_rods[equipped_rod].line_length);
         end
 
         -- Animate the lure position slightly in Y direction to create a bob effect
         local fish_x = lure_pos_x - camera_pos["x"];
         local fish_y = (lure_pos_y - lure_bob) - camera_pos["y"];
-        
+
         api_draw_line(rod_top_x, rod_top_y, fish_x, fish_y, "FISHING_LINE_COLOR")
 
         -- Draw lure - need to animate this
@@ -181,7 +323,7 @@ function v_draw_active_fishing_rod()
         end
 
     end
-end --v_draw_active_fishing_rod()
+end -- v_draw_active_fishing_rod()
 
 --[[
     Name: v_check_for_fish()
@@ -199,8 +341,7 @@ function v_check_for_fish()
         -- successful
         v_start_catch_event();
     end
-end --v_check_for_fish()
-
+end -- v_check_for_fish()
 
 --[[
     Name: v_start_catch_event()
@@ -212,13 +353,12 @@ function v_start_catch_event()
 
     ROD_STATE = CATCHING;
     catch_ticks = TICK_NUM; -- Start time for the catch
-    
+
     api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 80,
-                          "FISHING_LINE_COLOR");
+                      "FISHING_LINE_COLOR");
 
     api_play_sound("plop");
 end
-
 
 --[[
     Name: v_spawn_random_catch()
@@ -229,7 +369,7 @@ end
 function v_spawn_random_catch_reward()
 
     local i_num = api_random(10000);
-    
+
     if (i_num < 5) then -- 0.05%
         api_give_item("Neptune_artifact0")
     elseif (i_num < (fishing_rods[equipped_rod].fish_chance * 100)) then
@@ -242,7 +382,6 @@ function v_spawn_random_catch_reward()
         v_spawn_junk();
     end
 end
-
 
 --[[
     Name: v_spawn_fish()
@@ -265,7 +404,7 @@ function v_spawn_fish()
             api_give_item("Neptune_" .. id);
             api_create_log("Fish spawn: ", "Neptune_" .. id);
 
-            break;
+            break
         end
 
         chance_total = chance_total + chance;
@@ -285,7 +424,6 @@ function v_spawn_junk()
     api_create_log("junk spawn:", ("Neptune_junk" .. tostring(i_num)));
 end
 
-
 --[[
     Name: i_find_nearby_fishing_spots()
     Desc: Count how many fishing spots are within range of the lure
@@ -293,24 +431,22 @@ end
     Returns: Count of how many fishing spots are within x range
 --]]
 function i_find_nearby_fishing_spots(radius)
-    local objs = api_get_objects(); -- Get onscreen objects
+    local objs = api_get_objects(nil, "Neptune_fishing_spot"); -- Get onscreen objects
     local near_fishing_spots = 0;
 
     -- Count how many fishing spots are within x radius
-    for i=1,(#objs) do
-        if objs[i]["oid"] == "Neptune_fishing_spot" then
-            -- check if position is close
-            local i_dist = i_get_distance(lure_pos_x, lure_pos_y, (objs[i]["x"] + 8), (objs[i]["y"] + 8));
+    for i = 1, (#objs) do
+        -- check if position is close
+        local i_dist = i_get_distance(lure_pos_x, lure_pos_y,
+                                       (objs[i]["x"] + 8), (objs[i]["y"] + 8));
 
-            if (i_dist < radius) then
-                near_fishing_spots = near_fishing_spots + 1;
-            end
+        if (i_dist < radius) then
+            near_fishing_spots = near_fishing_spots + 1;
         end
     end
-    
-    return near_fishing_spots;
-end --i_find_nearby_fishing_spots()
 
+    return near_fishing_spots;
+end -- i_find_nearby_fishing_spots()
 
 --[[
     Name: v_check_fishing_line_length()
@@ -336,8 +472,7 @@ function v_check_fishing_line_length(rod_x, rod_y, lure_x, lure_y, max_dist)
     elseif (ROD_STATE == CASTED) then
         if (i_dist >= (max_dist + 10)) then v_reel_in_lure(); end
     end
-end --v_check_fishing_line_length()
-
+end -- v_check_fishing_line_length()
 
 --[[
     Name: v_reel_in_lure()
@@ -359,8 +494,7 @@ function v_reel_in_lure()
         click_pos_x = (player_pos["x"] - 20);
     end
     click_pos_y = (player_pos["y"]);
-end --v_reel_in_lure()
-
+end -- v_reel_in_lure()
 
 --[[
     Name: v_handle_lure_landing()
@@ -402,8 +536,7 @@ function v_handle_lure_landing()
         -- landed on ground, reel back in
         v_reel_in_lure();
     end
-end --v_handle_lure_landing()
-
+end -- v_handle_lure_landing()
 
 --[[
     Name: v_update_fishing_lure_pos()
@@ -439,4 +572,4 @@ function v_update_fishing_lure_pos()
         lure_pos_x = math.ceil(lure_pos_x - (speed_x * math.cos(angle)));
         lure_pos_y = math.ceil(lure_pos_y - (speed_y * math.sin(angle)));
     end
-end --v_update_fishing_lure_pos()
+end -- v_update_fishing_lure_pos()
