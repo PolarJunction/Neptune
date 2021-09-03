@@ -1,7 +1,3 @@
--- example of a function in another file that we can access
-function log(group, msg)
-    api_log(group, msg)
-  end
 
 --[[
     Name: i_counter()
@@ -140,35 +136,3 @@ function i_get_distance(posA_x, posA_y, posB_x, posB_y)
 
     return(math.ceil(math.sqrt((dXsq + dYsq))) );
 end --i_get_distance()
-
---[[
-    Name: x_get_table_keys()
-    Desc: Get a list of keys from a table
-    Params: Table to get keys from
-    Returns: List of keys
-]]
-function x_get_table_keys(table)
-    local keys = {}
-
-    for key, val in pairs(table) do
-        keys[#keys + 1] = key
-    end
-
-    return keys
-  end
-
---[[
-    Name: i_get_table_length()
-    Desc: Get a list of keys from a table
-    Params: Table to get keys from
-    Returns: List of keys
-]]
-function i_get_table_length(table)
-    local length = 0;
-
-    for key, val in pairs(table) do
-        length = length + 1;
-    end
-
-    return length
-  end

@@ -197,12 +197,12 @@ end -- v_cleanup_fishing_spots()
 --]]
 function v_check_for_fishing_spot()
 -- Check periodically if we should spawn a fishing spot
-    if (active_fishing_spots < 2) then
+    if (active_fishing_spots < MAX_ACTIVE_FISHING_SPOTS) then
 
         local i_roll = api_random(100);
 
-        if (i_roll > 80) then
-            local radius = 20 * 16; -- 16 points per tile
+        if (i_roll <= FISHING_SPOT_SPAWN_CHANCE) then
+            local radius = FISHING_SPOT_SPAWN_RADIUS * TILE_WIDTH;
 
             local player_pos = api_get_player_tile_position();
             local min_x = player_pos["x"] - radius;
@@ -226,7 +226,9 @@ function v_check_for_fishing_spot()
                 end
             end
 
-            if (#deep_tiles > 0) then
+            -- If we have enough deep tiles, spawn a fishing spot
+            -- To ensure an area with just a few deep tiles doesn't have too many fishing spots, restrict the density
+            if ((#deep_tiles > 0) and (#deep_tiles >= (ACTIVE_FISHING_SPOTS_DENSITY * (active_fishing_spots + 1))) ) then
                 local idx = api_random(#deep_tiles);
                 -- Spawn a fishing spot at the location
                 v_spawn_fishing_spot(deep_tiles[idx].xPos, deep_tiles[idx].yPos, (60 + api_random(120)));
@@ -333,8 +335,6 @@ end -- v_draw_active_fishing_rod()
 --]]
 function v_check_for_fish()
     -- Check if we are casted
-    -- Check if the lure is within x range of a fishing spot
-
     local i_num = api_random(100);
     -- 5% chance of successfully fishing
     if (i_num <= fishing_rods[equipped_rod].catch_chance) then
@@ -370,16 +370,15 @@ function v_spawn_random_catch_reward()
 
     local i_num = api_random(10000);
 
-    if (i_num < 5) then -- 0.05%
+    if (i_num < ARTIFACT_CHANCE) then -- 0.05%
         api_give_item("Neptune_artifact0")
+
     elseif (i_num < (fishing_rods[equipped_rod].fish_chance * 100)) then
-        api_create_log(tostring(i_num), "spawn_fish");
-        -- Spawn fish
         v_spawn_fish();
+
     else
-        api_create_log(tostring(i_num), "spawn_junk");
-        -- Spawn random junk item
         v_spawn_junk();
+
     end
 end
 
@@ -505,6 +504,7 @@ end -- v_reel_in_lure()
 function v_handle_lure_landing()
     -- Get the tile type under the lure
     local lure_tile = api_get_ground(lure_pos_x, lure_pos_y);
+    local floor_tile = api_get_floor(lure_pos_x, lure_pos_y);
     local biome = string.sub(lure_tile, -1);
 
     -- Record the biome of the tile that the lure landed on
@@ -519,12 +519,12 @@ function v_handle_lure_landing()
     end
 
     -- Check what tile type the lure landed on, and activate the correct effect
-    if (string.match(lure_tile, "water")) then
+    if (string.match(lure_tile, "water") and floor_tile == "tile0") then
         -- shallow water splash
         api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 40,
                           "FISHING_LINE_COLOR");
 
-    elseif (string.match(lure_tile, "deep")) then
+    elseif (string.match(lure_tile, "deep") and floor_tile == "tile0") then
         -- deep water splash
         api_create_effect(lure_pos_x, lure_pos_y, "EXTRACT_DUST", 40,
                           "FISHING_LINE_COLOR");
@@ -550,7 +550,7 @@ function v_update_fishing_lure_pos()
     local deltaX = lure_pos_x - click_pos_x;
     local deltaY = lure_pos_y - click_pos_y;
 
-    if (math.abs(deltaX) <= 10) and (math.abs(deltaY) <= 10) then
+    if (math.abs(deltaX) <= LURE_LANDING_DELTA) and (math.abs(deltaY) <= LURE_LANDING_DELTA) then
         if (ROD_STATE == CASTING) then
             -- landed
             ROD_STATE = CASTED;
@@ -566,8 +566,8 @@ function v_update_fishing_lure_pos()
         end
     else
         local angle = math.atan(deltaY, deltaX);
-        local speed_x = 3; -- rod cast speed
-        local speed_y = 2;
+        local speed_x = LURE_X_SPEED; -- rod cast speed
+        local speed_y = LURE_Y_SPEED;
 
         lure_pos_x = math.ceil(lure_pos_x - (speed_x * math.cos(angle)));
         lure_pos_y = math.ceil(lure_pos_y - (speed_y * math.sin(angle)));

@@ -20,6 +20,7 @@ CATCHING = 5;
 
 equipped_rod = "";
 
+
 click_pos_x = 0; -- pos to track where a player clicked to cast
 click_pos_y = 0;
 
@@ -39,6 +40,20 @@ catch_ticks = 0; -- Store when the catch event was started to check if the playe
 
 active_fishing_spots = 0; -- How many fishing spots are active on the screen, used to check if we need to spawn one
 fishing_spot_ids = {};
+
+-- Constants / Settings
+TILE_WIDTH = 16;
+
+MAX_ACTIVE_FISHING_SPOTS = 3; -- Maximum fishing spots to spawn in the spawn radius assuming density isn't exceeded
+ACTIVE_FISHING_SPOTS_DENSITY = 15; -- One fishing spot per 15 deep tiles
+FISHING_SPOT_SPAWN_RADIUS = 20; -- Radius to check for deep tiles to spawn fishing spots
+FISHING_SPOT_SPAWN_CHANCE = 20; -- Chance per second to spawn a fishing spot when one is needed, will slow down spawning when moving areas
+
+ARTIFACT_CHANCE = 5; -- 0.05% chance of spawning artifact
+
+LURE_LANDING_DELTA = 10; -- Distance of moving lure to assume we have landed and correct pos
+LURE_X_SPEED = 3; -- Speed of the lure in the X direction, faster to form a slight curve
+LURE_Y_SPEED = 2; -- Speed of the lure in the y direction
 
 -- Add globals for the fish types just to make it easier to define rod tables
 GUPPY = "fish0";

@@ -9,7 +9,7 @@ function register()
     -- register our mod name and the hooks we want
     return {
         name = "Neptune",
-        hooks = {"clock", "key", "draw", "tick", "click", "ready"},
+        hooks = {"clock", "draw", "tick", "click", "ready"},
         modules = {"utility", "globals", "fishing", "artifact"}
     }
 end --register()
@@ -125,18 +125,8 @@ function init()
     spr_fishing_lure = api_define_sprite("lure", "sprites/fishing-lure.png", 4);
     spr_trident = api_define_sprite("trident", "sprites/artifact0_active.png", 2);
 
-
-    api_define_command("/teleport", "teleport_command")
-
     return "Success"
 end --init()
-
--- command run when player types "/teleport"
-function teleport_command(args) 
-    -- args are a list of args after /teleport seperated by spaces
-    -- for example we could type "/teleport 100 50" in this case
-    api_set_player_position(args[1], args[2])
-  end
 
 
 --[[
@@ -148,12 +138,13 @@ function teleport_command(args)
 function ready()
     -- If we haven't already spawned our npc, spawn him now
     fisherman_npc = api_get_menu_objects(nil, "npc42")
+
     if (#fisherman_npc == 0) then
         api_create_obj("npc42", 3467, 827);
     end
 
     v_cleanup_fishing_spots();
-end
+end --ready()
 
 
 --[[
@@ -219,34 +210,12 @@ function draw()
     -- If we have fishing rod equiped, draw it
     if (ROD_STATE >= READY) then
         v_draw_active_fishing_rod();
+
     elseif (b_is_equipped("Neptune_artifact0")) then
         v_draw_active_trident();
+
     end
 end --draw()
-
-
---[[
-    Name: key()
-    Desc: Game hook, called when a key is pressed
-    Params: Key code of the key that was pressed
-    Returns: N/A
---]]
-function key(key_code)
-    if (key_code == 32) then
-        -- create a fishing spot
-        local player_pos = api_get_player_position()
-
-        local px = player_pos["x"] + 40
-        local py = player_pos["y"] + 40
-
-        api_create_obj("Neptune_fishing_spot", px, py);
-
-        player = api_get_player_position()
-        api_create_log("Loc:", ("x:" .. tostring(player["x"]) .. " y:" .. tostring(player["y"]) ));
-    elseif (key_code == 70) then
-        v_spawn_random_catch_reward();
-    end
-end --key()
 
 
 --[[
