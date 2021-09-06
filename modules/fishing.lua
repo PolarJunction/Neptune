@@ -371,7 +371,7 @@ function v_spawn_random_catch_reward()
     local i_num = api_random(10000);
 
     if (i_num < ARTIFACT_CHANCE) then -- 0.05%
-        api_give_item("Neptune_artifact0")
+        api_give_item("Neptune_artifact0", 1)
 
     elseif (i_num < (fishing_rods[equipped_rod].fish_chance * 100)) then
         v_spawn_fish();
@@ -400,7 +400,7 @@ function v_spawn_fish()
 
     for id, chance in pairs(available_fish) do
         if (i_num >= chance_total) and (i_num < (chance_total + chance)) then
-            api_give_item("Neptune_" .. id);
+            api_give_item("Neptune_" .. id, 1);
             api_create_log("Fish spawn: ", "Neptune_" .. id);
 
             break
@@ -419,7 +419,7 @@ end
 function v_spawn_junk()
     local i_num = math.floor(api_random((num_junk_items) - 1));
 
-    api_give_item(("Neptune_junk" .. tostring(i_num)));
+    api_give_item(("Neptune_junk" .. tostring(i_num)), 1);
     api_create_log("junk spawn:", ("Neptune_junk" .. tostring(i_num)));
 end
 
