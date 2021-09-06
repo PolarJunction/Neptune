@@ -22,8 +22,7 @@ end --register()
     Return: String - to indicate "Success"
 --]]
 function init()
-    -- init the mod
-    api_set_devmode(true);
+    -- api_set_devmode(true);
 
     -- Define all of the fishing rods
     for id, rod in pairs(fishing_rods) do
