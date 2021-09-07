@@ -57,7 +57,7 @@ function init()
         shop_key = false,
         shop_buy = 0,
         shop_sell = 0,
-        tools = {"Neptune_rod0"},
+        tools = {},
         invisible = true
     }, "sprites/fishing-spot-dummy.png")
 
