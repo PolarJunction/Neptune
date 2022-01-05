@@ -8,7 +8,7 @@
 function register()
     -- register our mod name and the hooks we want
     return {
-        name = "Neptune",
+        name = "neptune",
         hooks = {"clock", "draw", "tick", "click", "ready"},
         modules = {"utility", "globals", "fishing", "artifact"}
     }
@@ -83,8 +83,8 @@ function init()
         tooltip = "Elderly fisherman",
         shop = true,
         walking = false,
-        stock = {"Neptune_rod0", "Neptune_rod1", "Neptune_rod2", "Neptune_rod3", "Neptune_rod4"}, -- max 10
-        specials = {"Neptune_bait1", "Neptune_bait2", "Neptune_bait3"}, -- must be 3
+        stock = {"neptune_rod0", "neptune_rod1", "neptune_rod2", "neptune_rod3", "neptune_rod4"}, -- max 10
+        specials = {"neptune_bait1", "neptune_bait2", "neptune_bait3"}, -- must be 3
         dialogue = {
         "If I'm not fishing, I'm thinking about it..",
         "A fisherman lives here, with the catch of his life..",
@@ -210,7 +210,7 @@ function draw()
     if (ROD_STATE >= READY) then
         v_draw_active_fishing_rod();
 
-    elseif (b_is_equipped("Neptune_artifact0")) then
+    elseif (b_is_equipped("neptune_artifact0")) then
         v_draw_active_trident();
 
     end
@@ -227,13 +227,13 @@ function click(button, click_type)
 
     if (button == "LEFT" and click_type == "PRESSED") then
      -- Check if we have a fishing rod equipped
-        if (b_is_equipped("Neptune_rod")) then
+        if (b_is_equipped("neptune_rod")) then
             v_cast_rod();
 
-        elseif (b_is_equipped("Neptune_bait")) then
+        elseif (b_is_equipped("neptune_bait")) then
             v_consume_bait();
 
-        elseif (b_is_equipped("Neptune_artifact0"))  then
+        elseif (b_is_equipped("neptune_artifact0"))  then
             v_activate_trident();
 
         end

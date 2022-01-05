@@ -53,12 +53,12 @@ function v_check_rod_equipped()
     -- If its not a rod, set not equipped state
     local currently_equipped = api_get_equipped();
 
-    if ((b_is_equipped("Neptune_rod") == false) and (ROD_STATE ~= NOT_EQUIPPED)) then
+    if ((b_is_equipped("neptune_rod") == false) and (ROD_STATE ~= NOT_EQUIPPED)) then
         -- If we don't have a rod, make sure NOT_EQUIPPED is set
         ROD_STATE = NOT_EQUIPPED;
         equipped_rod = "";
 
-    elseif (b_is_equipped("Neptune_rod") == true) then
+    elseif (b_is_equipped("neptune_rod") == true) then
         -- If we have a rod equipped, check if it has changed
         local rodId = string.sub(currently_equipped, -4)
 
@@ -82,7 +82,7 @@ end
 --]]
 function v_draw_animated_fishing_spots()
     -- get a list of nearby objects in camera view
-    local objs = api_get_objects(nil, "Neptune_fishing_spot");
+    local objs = api_get_objects(nil, "neptune_fishing_spot");
     local camera_pos = api_get_cam();
     active_fishing_spots = 0;
 
@@ -113,7 +113,7 @@ function v_consume_bait()
     -- Check the bait was thrown into shallow/deep water
     if (string.match(tile, "water") or string.match(tile, "deep")) then
         -- Double check it is actually bait we have
-        if (b_is_equipped("Neptune_bait")) then
+        if (b_is_equipped("neptune_bait")) then
             -- Get player slots
             local slot = api_slot_match(api_get_player_instance(), {bait_item},
                                         true)
@@ -127,16 +127,16 @@ function v_consume_bait()
                 local tgt_roll = 80;
                 local timer = 60;
 
-                if (bait_item == "Neptune_bait1") then
+                if (bait_item == "neptune_bait1") then
                     tgt_roll = 70;
                     timer = 80;
-                elseif (bait_item == "Neptune_bait2") then
+                elseif (bait_item == "neptune_bait2") then
                     tgt_roll = 60;
                     timer = 100;
-                elseif (bait_item == "Neptune_bait3") then
+                elseif (bait_item == "neptune_bait3") then
                     tgt_roll = 50;
                     timer = 120;
-                elseif (bait_item == "Neptune_bait4") then
+                elseif (bait_item == "neptune_bait4") then
                     tgt_roll = 0;
                     timer = 180;
                 end
@@ -162,7 +162,7 @@ end -- v_consume_bait()
 --]]
 function v_spawn_fishing_spot(x, y, timer)
     -- Spawn a fishing spot at the location
-    local spot_id = api_create_obj("Neptune_fishing_spot", x, y);
+    local spot_id = api_create_obj("neptune_fishing_spot", x, y);
     -- Despawn it after a short time, depending on the quality of bait used
     api_create_timer("api_destroy_inst", timer, spot_id)
     -- Add it to the list of known id's so it doesn't get cleaned up
@@ -178,7 +178,7 @@ end -- v_spawn_fishing_spot()
 --]]
 function v_cleanup_fishing_spots()
     -- Get all active fishing spots and check they have been spawned since the game started
-    local objs = api_get_objects(nil, "Neptune_fishing_spot");
+    local objs = api_get_objects(nil, "neptune_fishing_spot");
 
     for i=1, #objs do
         if (fishing_spot_ids[(objs[i]["id"])] == nil) then
@@ -371,7 +371,7 @@ function v_spawn_random_catch_reward()
     local i_num = api_random(10000);
 
     if (i_num < ARTIFACT_CHANCE) then -- 0.05%
-        api_give_item("Neptune_artifact0", 1)
+        api_give_item("neptune_artifact0", 1)
 
     elseif (i_num < (fishing_rods[equipped_rod].fish_chance * 100)) then
         v_spawn_fish();
@@ -400,8 +400,8 @@ function v_spawn_fish()
 
     for id, chance in pairs(available_fish) do
         if (i_num >= chance_total) and (i_num < (chance_total + chance)) then
-            api_give_item("Neptune_" .. id, 1);
-            api_create_log("Fish spawn: ", "Neptune_" .. id);
+            api_give_item("neptune_" .. id, 1);
+            api_create_log("Fish spawn: ", "neptune_" .. id);
 
             break
         end
@@ -419,8 +419,8 @@ end
 function v_spawn_junk()
     local i_num = math.floor(api_random((num_junk_items) - 1));
 
-    api_give_item(("Neptune_junk" .. tostring(i_num)), 1);
-    api_create_log("junk spawn:", ("Neptune_junk" .. tostring(i_num)));
+    api_give_item(("neptune_junk" .. tostring(i_num)), 1);
+    api_create_log("junk spawn:", ("neptune_junk" .. tostring(i_num)));
 end
 
 --[[
@@ -430,7 +430,7 @@ end
     Returns: Count of how many fishing spots are within x range
 --]]
 function i_find_nearby_fishing_spots(radius)
-    local objs = api_get_objects(nil, "Neptune_fishing_spot"); -- Get onscreen objects
+    local objs = api_get_objects(nil, "neptune_fishing_spot"); -- Get onscreen objects
     local near_fishing_spots = 0;
 
     -- Count how many fishing spots are within x radius
