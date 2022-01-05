@@ -32,8 +32,7 @@ function v_define_fish(id, name, tooltip, sell)
         tooltip = tooltip,
         shop_key = false,
         shop_buy = 0,
-        shop_sell = sell,
-        singular = false },
+        shop_sell = sell },
 
         ("sprites/" .. id .. ".png") );
 end
@@ -53,8 +52,7 @@ function v_define_junk(id, name, tooltip, sell)
         tooltip = tooltip,
         shop_key = false,
         shop_buy = 0,
-        shop_sell = sell,
-        singular = false  },
+        shop_sell = sell },
 
         ("sprites/" .. id .. ".png") );
 end
@@ -95,8 +93,7 @@ function v_define_bait(id, name, tooltip, buy)
         tooltip = tooltip,
         shop_key = false,
         shop_buy = buy,
-        shop_sell = (buy / 2),
-        singular = false },
+        shop_sell = (buy / 2)},
 
         ("sprites/" .. id .. ".png") );
 end
