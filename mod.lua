@@ -90,8 +90,11 @@ function init()
         "A fisherman lives here, with the catch of his life..",
         "I'd rather have a bad day fishing, than a good day at work..",
         "Sometimes, when the water is quiet, you can almost hear the fish laughing at you..",
-        "Work is for people who can't fish",
-        "There is no losing in fishing. You either catch or you learn.."
+        "Work is for people who can't fish..",
+        "There is no losing in fishing. You either catch or you learn..",
+        "Although I did lose something special around here..",
+        "The bounty of the sea is endless..",
+        "What are you doing yapping to me, get back to fishing.."
         },
         greeting = "The sea calls you again? I've got wares that can help.."
     }
