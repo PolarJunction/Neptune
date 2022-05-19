@@ -268,20 +268,20 @@ function v_draw_active_fishing_rod()
 
         -- Draw fishing line - if casted
         local rod_top_x = px;
-        local rod_top_y = py;
+        local rod_top_y = py + 1;
 
         --- Draw & Adjust line attach point if we are flipped
         if (dir == "right") then
             -- Casting/casted fishing rod
             api_draw_sprite(spr_fishing_rod, 1, (px + 4), py);
 
-            rod_top_x = rod_top_x + 16;
+            rod_top_x = rod_top_x + 18;
 
         else
             -- Casting/casted fishing rod
             api_draw_sprite_ext(spr_fishing_rod, 1, (px - 4), py, -1, 1, 0, 1, 1);
 
-            rod_top_x = rod_top_x - 20;
+            rod_top_x = rod_top_x - 18;
         end
 
         -- Update lure pos if we are casting
