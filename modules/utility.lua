@@ -30,7 +30,6 @@ function v_define_fish(id, name, tooltip, sell)
         name = name,
         category = "Fish",
         tooltip = tooltip,
-        shop_key = false,
         shop_buy = 0,
         shop_sell = sell },
 
@@ -50,7 +49,6 @@ function v_define_junk(id, name, tooltip, sell)
         name = name,
         category = "Junk",
         tooltip = tooltip,
-        shop_key = false,
         shop_buy = 0,
         shop_sell = sell },
 
@@ -70,7 +68,6 @@ function v_define_rod(id, name, tooltip, buy)
         name = name,
         category = "Tool",
         tooltip = tooltip,
-        shop_key = false,
         shop_buy = buy,
         shop_sell = math.floor(buy / 2),
         singular = true },
@@ -91,7 +88,6 @@ function v_define_bait(id, name, tooltip, buy)
         name = name,
         category = "Fishing Bait",
         tooltip = tooltip,
-        shop_key = false,
         shop_buy = buy,
         shop_sell = (buy / 2)},
 
